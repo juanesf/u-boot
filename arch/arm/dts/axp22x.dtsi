@@ -52,6 +52,11 @@
 	interrupt-controller;
 	#interrupt-cells = <1>;
 
+	axp_led: led {
+		compatible = "x-powers,axp20x-led";
+		status = "disabled";
+	};
+
 	ac_power_supply: ac-power-supply {
 		compatible = "x-powers,axp221-ac-power-supply";
 		status = "disabled";
