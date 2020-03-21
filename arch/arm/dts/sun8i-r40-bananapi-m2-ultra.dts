@@ -107,6 +107,14 @@
 	};
 };
 
+&axp_led {
+	compatible = "x-powers,axp20x-led";
+	label = "axp20x:red:chgled";
+	status = "okay";
+	linux,default-trigger = "timer";
+	default-state = "on";
+};
+
 &ahci {
 	ahci-supply = <&reg_dldo4>;
 	phy-supply = <&reg_eldo3>;
