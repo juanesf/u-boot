@@ -131,6 +131,7 @@
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
+		dma-ranges;
 		ranges;
 
 		display_clocks: clock@1000000 {
@@ -658,7 +659,7 @@
 		};
 
 		codec: codec@1c22c00 {
-			#sound-dai-cells = <1>;
+			#sound-dai-cells = <0>;
 			compatible = "allwinner,sun8i-h3-codec";
 			reg = <0x01c22c00 0x300>;
 			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
@@ -668,7 +669,7 @@
 			dmas = <&dma 19>, <&dma 19>;
 			dma-names = "rx", "tx";
 			allwinner,codec-analog-controls = <&codec_analog>;
-			allwinner,audio-routing = <&codec_analog>;
+//			allwinner,audio-routing = <&codec_analog>;
 			status = "okay";
 		};
 
