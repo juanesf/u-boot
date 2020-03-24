@@ -668,15 +668,12 @@
 			dmas = <&dma 19>, <&dma 19>;
 			dma-names = "rx", "tx";
 			allwinner,codec-analog-controls = <&codec_analog>;
-			allwinner,audio-routing =
-				"Headphone", "HP",
-				"MIC1", "MBIAS",
-				"MIC1", "Mic";
+			allwinner,audio-routing = <&codec_analog>;
 			status = "okay";
 		};
 
 		codec_analog: codec-analog@1c22f00 {
-			compatible = "allwinner,sun8i-a23-codec-analog";
+			compatible = "allwinner,sun8i-h3-codec-analog";
 			reg = <0x01c22f00 0x4>;
 		};
 
@@ -894,6 +891,7 @@
 			clocks = <&ccu 155>;
 			dma-ranges = <0x00000000 0x40000000 0x80000000>;
 			#address-cells = <1>;
+			#size-cells = <1>;
 			#interconnect-cells = <1>;
 		};
 
