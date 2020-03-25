@@ -113,6 +113,15 @@
 	status = "okay";
 };
 
+&codec {
+	allwinner,audio-routing =
+		"Line Out", "LINEOUT",
+		"Headphone", "HP",
+		"MIC1", "Mic",
+		"Mic",  "MBIAS";
+	status = "okay";
+};
+
 &de {
 	status = "okay";
 };
@@ -163,14 +172,10 @@
 };
 
 &ir0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&ir0_rx_pins>;
 	status = "okay";
 };
 
 &ir1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&ir1_rx_pins>;
 	status = "disabled";
 };
 

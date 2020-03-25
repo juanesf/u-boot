@@ -131,6 +131,7 @@
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
+		dma-ranges;
 		ranges;
 
 		display_clocks: clock@1000000 {
@@ -192,7 +193,7 @@
 
 		system-control@1c00000 {
 			compatible = "allwinner,sun8i-h3-system-control";
-			reg = <0x01c00000 0x30>;
+			reg = <0x01c00000 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
@@ -668,15 +669,11 @@
 			dmas = <&dma 19>, <&dma 19>;
 			dma-names = "rx", "tx";
 			allwinner,codec-analog-controls = <&codec_analog>;
-			allwinner,audio-routing =
-				"Headphone", "HP",
-				"MIC1", "MBIAS",
-				"MIC1", "Mic";
-			status = "okay";
+			status = "disabled";
 		};
 
 		codec_analog: codec-analog@1c22f00 {
-			compatible = "allwinner,sun8i-a23-codec-analog";
+			compatible = "allwinner,sun8i-h3-codec-analog";
 			reg = <0x01c22f00 0x4>;
 		};
 
