@@ -673,7 +673,7 @@
 		};
 
 		codec_analog: codec-analog@1c22f00 {
-			compatible = "allwinner,sun8i-h3-codec-analog";
+			compatible = "allwinner,sun8i-a23-codec-analog";
 			reg = <0x01c22f00 0x4>;
 		};
 
