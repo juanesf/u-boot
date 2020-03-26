@@ -110,7 +110,6 @@
 &codec {
 	allwinner,audio-routing =
 		"Line Out", "LINEOUT",
-		"Headphone", "HP",
 		"MIC1", "Mic",
 		"Mic",  "MBIAS";
 	status = "okay";
