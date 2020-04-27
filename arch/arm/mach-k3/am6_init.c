@@ -17,6 +17,7 @@
 #include <dm/uclass-internal.h>
 #include <dm/pinctrl.h>
 #include <linux/soc/ti/ti_sci_protocol.h>
+#include <mmc.h>
 
 #ifdef CONFIG_SPL_BUILD
 #ifdef CONFIG_K3_LOAD_SYSFW
@@ -86,6 +87,33 @@ static void store_boot_index_from_rom(void)
 	bootindex = *(u32 *)(CONFIG_SYS_K3_BOOT_PARAM_TABLE_INDEX);
 }
 
+#if defined(CONFIG_K3_LOAD_SYSFW)
+void k3_mmc_stop_clock(void)
+{
+	if (spl_boot_device() == BOOT_DEVICE_MMC1) {
+		struct mmc *mmc = find_mmc_device(0);
+
+		if (!mmc)
+			return;
+
+		mmc->saved_clock = mmc->clock;
+		mmc_set_clock(mmc, 0, true);
+	}
+}
+
+void k3_mmc_restart_clock(void)
+{
+	if (spl_boot_device() == BOOT_DEVICE_MMC1) {
+		struct mmc *mmc = find_mmc_device(0);
+
+		if (!mmc)
+			return;
+
+		mmc_set_clock(mmc, mmc->saved_clock, false);
+	}
+}
+#endif
+
 void board_init_f(ulong dummy)
 {
 #if defined(CONFIG_K3_LOAD_SYSFW) || defined(CONFIG_K3_AM654_DDRSS)
@@ -133,12 +161,13 @@ void board_init_f(ulong dummy)
 		pinctrl_select_state(dev, "default");
 
 	/*
-	 * Load, start up, and configure system controller firmware. Provide
-	 * the U-Boot console init function to the SYSFW post-PM configuration
-	 * callback hook, effectively switching on (or over) the console
-	 * output.
+	 * Load, start up, and configure system controller firmware while
+	 * also populating the SYSFW post-PM configuration callback hook.
 	 */
-	k3_sysfw_loader(preloader_console_init);
+	k3_sysfw_loader(k3_mmc_stop_clock, k3_mmc_restart_clock);
+
+	/* Prepare console output */
+	preloader_console_init();
 
 	/* Disable ROM configured firewalls right after loading sysfw */
 #ifdef CONFIG_TI_SECURE_DEVICE
@@ -149,6 +178,9 @@ void board_init_f(ulong dummy)
 	/* Prepare console output */
 	preloader_console_init();
 #endif
+
+	/* Output System Firmware version info */
+	k3_sysfw_print_ver();
 
 	/* Perform EEPROM-based board detection */
 	do_board_detect();
@@ -167,7 +199,7 @@ void board_init_f(ulong dummy)
 #endif
 }
 
-u32 spl_boot_mode(const u32 boot_device)
+u32 spl_mmc_boot_mode(const u32 boot_device)
 {
 #if defined(CONFIG_SUPPORT_EMMC_BOOT)
 	u32 devstat = readl(CTRLMMR_MAIN_DEVSTAT);

@@ -20,6 +20,7 @@ endif
 obj-$(CONFIG_ARM_PL180_MMCI) += arm_pl180_mmci.o
 obj-$(CONFIG_MMC_DAVINCI)		+= davinci_mmc.o
 obj-$(CONFIG_MMC_DW)			+= dw_mmc.o
+obj-$(CONFIG_MMC_DW_CORTINA)		+= ca_dw_mmc.o
 obj-$(CONFIG_MMC_DW_EXYNOS)		+= exynos_dw_mmc.o
 obj-$(CONFIG_MMC_DW_K3)			+= hi6220_dw_mmc.o
 obj-$(CONFIG_MMC_DW_ROCKCHIP)		+= rockchip_dw_mmc.o
@@ -37,7 +38,7 @@ obj-$(CONFIG_MMC_MXC)			+= mxcmmc.o
 obj-$(CONFIG_MMC_MXS)			+= mxsmmc.o
 obj-$(CONFIG_MMC_PCI)			+= pci_mmc.o
 obj-$(CONFIG_PXA_MMC_GENERIC) += pxa_mmc_gen.o
-obj-$(CONFIG_SUPPORT_EMMC_RPMB) += rpmb.o
+obj-$(CONFIG_$(SPL_TPL_)SUPPORT_EMMC_RPMB) += rpmb.o
 obj-$(CONFIG_MMC_SANDBOX)		+= sandbox_mmc.o
 obj-$(CONFIG_SH_MMCIF) += sh_mmcif.o
 obj-$(CONFIG_SH_SDHI) += sh_sdhi.o

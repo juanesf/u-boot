@@ -18,6 +18,8 @@
 #include <dm.h>
 #include <dm/uclass-internal.h>
 #include <dm/pinctrl.h>
+#include <mmc.h>
+#include <remoteproc.h>
 
 #ifdef CONFIG_SPL_BUILD
 #ifdef CONFIG_K3_LOAD_SYSFW
@@ -100,6 +102,33 @@ static void ctrl_mmr_unlock(void)
 	mmr_unlock(CTRL_MMR0_BASE, 7);
 }
 
+#if defined(CONFIG_K3_LOAD_SYSFW)
+void k3_mmc_stop_clock(void)
+{
+	if (spl_boot_device() == BOOT_DEVICE_MMC1) {
+		struct mmc *mmc = find_mmc_device(0);
+
+		if (!mmc)
+			return;
+
+		mmc->saved_clock = mmc->clock;
+		mmc_set_clock(mmc, 0, true);
+	}
+}
+
+void k3_mmc_restart_clock(void)
+{
+	if (spl_boot_device() == BOOT_DEVICE_MMC1) {
+		struct mmc *mmc = find_mmc_device(0);
+
+		if (!mmc)
+			return;
+
+		mmc_set_clock(mmc, mmc->saved_clock, false);
+	}
+}
+#endif
+
 /*
  * This uninitialized global variable would normal end up in the .bss section,
  * but the .bss is cleared between writing and reading this variable, so move
@@ -154,7 +183,10 @@ void board_init_f(ulong dummy)
 	 * callback hook, effectively switching on (or over) the console
 	 * output.
 	 */
-	k3_sysfw_loader(preloader_console_init);
+	k3_sysfw_loader(k3_mmc_stop_clock, k3_mmc_restart_clock);
+
+	/* Prepare console output */
+	preloader_console_init();
 
 	/* Disable ROM configured firewalls right after loading sysfw */
 #ifdef CONFIG_TI_SECURE_DEVICE
@@ -170,6 +202,9 @@ void board_init_f(ulong dummy)
 	/* Prepare console output */
 	preloader_console_init();
 #endif
+
+	/* Output System Firmware version info */
+	k3_sysfw_print_ver();
 
 	/* Perform EEPROM-based board detection */
 	do_board_detect();
@@ -188,7 +223,7 @@ void board_init_f(ulong dummy)
 #endif
 }
 
-u32 spl_boot_mode(const u32 boot_device)
+u32 spl_mmc_boot_mode(const u32 boot_device)
 {
 	switch (boot_device) {
 	case BOOT_DEVICE_MMC1:
@@ -293,5 +328,38 @@ void release_resources_for_core_shutdown(void)
 			panic("Failed sending core %u shutdown message (%d)\n",
 			      id, ret);
 	}
+}
+#endif
+
+#ifdef CONFIG_SYS_K3_SPL_ATF
+void start_non_linux_remote_cores(void)
+{
+	int size = 0, ret;
+	u32 loadaddr = 0;
+
+	size = load_firmware("name_mainr5f0_0fw", "addr_mainr5f0_0load",
+			     &loadaddr);
+	if (size <= 0)
+		goto err_load;
+
+	/* assuming remoteproc 2 is aliased for the needed remotecore */
+	ret = rproc_load(2, loadaddr, size);
+	if (ret) {
+		printf("Firmware failed to start on rproc (%d)\n", ret);
+		goto err_load;
+	}
+
+	ret = rproc_start(2);
+	if (ret) {
+		printf("Firmware init failed on rproc (%d)\n", ret);
+		goto err_load;
+	}
+
+	printf("Remoteproc 2 started successfully\n");
+
+	return;
+
+err_load:
+	rproc_reset(2);
 }
 #endif

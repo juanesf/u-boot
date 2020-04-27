@@ -568,6 +568,7 @@ config PRE_CON_BUF_ADDR
 	default 0x2f000000 if ARCH_SUNXI && MACH_SUN9I
 	default 0x4f000000 if ARCH_SUNXI && !MACH_SUN9I
 	default 0x0f000000 if ROCKCHIP_RK3288
+	default 0x0f200000 if ROCKCHIP_RK3399
 	help
 	  This sets the start address of the pre-console buffer. This must
 	  be in available memory and is accessed before relocation and
@@ -774,9 +775,16 @@ config TPL_LOG_CONSOLE
 	  log message is shown - other details like level, category, file and
 	  line number are omitted.
 
+config LOG_SYSLOG
+	bool "Log output to syslog server"
+	depends on LOG && NET
+	help
+	  Enables a log driver which broadcasts log records via UDP port 514
+	  to syslog servers.
+
 config LOG_TEST
 	bool "Provide a test for logging"
-	depends on LOG
+	depends on LOG && UNIT_TEST
 	default y if SANDBOX
 	help
 	  This enables a 'log test' command to test logging. It is normally
@@ -1045,3 +1053,21 @@ config BLOBLIST_ADDR
 endmenu
 
 source "common/spl/Kconfig"
+
+config IMAGE_SIGN_INFO
+	bool
+	select SHA1
+	select SHA256
+	help
+	  Enable image_sign_info helper functions.
+
+if IMAGE_SIGN_INFO
+
+config SPL_IMAGE_SIGN_INFO
+	bool
+	select SHA1
+	select SHA256
+	help
+	  Enable image_sign_info helper functions in SPL.
+
+endif

@@ -598,15 +598,6 @@ config TARGET_X600
 	select PL011_SERIAL
 	select SUPPORT_SPL
 
-config TARGET_WOODBURN
-	bool "Support woodburn"
-	select CPU_ARM1136
-
-config TARGET_WOODBURN_SD
-	bool "Support woodburn_sd"
-	select CPU_ARM1136
-	select SUPPORT_SPL
-
 config TARGET_FLEA3
 	bool "Support flea3"
 	select CPU_ARM1136
@@ -771,6 +762,7 @@ config ARCH_OMAP2PLUS
 config ARCH_MESON
 	bool "Amlogic Meson"
 	imply DISTRO_DEFAULTS
+	imply DM_RNG
 	help
 	  Support for the Meson SoC family developed by Amlogic Inc.,
 	  targeted at media players and tablet computers. We currently
@@ -778,7 +770,6 @@ config ARCH_MESON
 
 config ARCH_MEDIATEK
 	bool "MediaTek SoCs"
-	select BINMAN
 	select DM
 	select OF_CONTROL
 	select SPL_DM if SPL
@@ -883,10 +874,13 @@ config ARCH_MX5
 
 config ARCH_OWL
 	bool "Actions Semi OWL SoCs"
-	select ARM64
 	select DM
 	select DM_SERIAL
+	select OWL_SERIAL
+	select CLK
+	select CLK_OWL
 	select OF_CONTROL
+	select CONFIG_SYS_RELOC_GD_ENV_ADDR
 	imply CMD_DM
 
 config ARCH_QEMU
@@ -999,6 +993,8 @@ config ARCH_SUNXI
 	select USB_KEYBOARD if DISTRO_DEFAULTS
 	select USB_STORAGE if DISTRO_DEFAULTS
 	select SPL_USE_TINY_PRINTF
+	select USE_PREBOOT
+	select SYS_RELOC_GD_ENV_ADDR
 	imply CMD_DM
 	imply CMD_GPT
 	imply CMD_UBI if MTD_RAW_NAND
@@ -1376,6 +1372,7 @@ config TARGET_LS1028ARDB
 	select ARM64
 	select ARMV8_MULTIENTRY
 	select ARCH_SUPPORT_TFABOOT
+	select BOARD_LATE_INIT
 	help
 	  Support for Freescale LS1028ARDB platform
 	  The LS1028A Development System (RDB) is a high-performance
@@ -1593,6 +1590,7 @@ config ARCH_STI
 config ARCH_STM32MP
 	bool "Support STMicroelectronics STM32MP Socs with cortex A"
 	select ARCH_MISC_INIT
+	select ARCH_SUPPORT_TFABOOT
 	select BOARD_LATE_INIT
 	select CLK
 	select DM
@@ -1875,12 +1873,10 @@ source "board/spear/spear600/Kconfig"
 source "board/spear/x600/Kconfig"
 source "board/st/stv0991/Kconfig"
 source "board/tcl/sl50/Kconfig"
-source "board/ucRobotics/bubblegum_96/Kconfig"
 source "board/birdland/bav335x/Kconfig"
 source "board/toradex/colibri_pxa270/Kconfig"
 source "board/variscite/dart_6ul/Kconfig"
 source "board/vscom/baltos/Kconfig"
-source "board/woodburn/Kconfig"
 source "board/xilinx/Kconfig"
 source "board/xilinx/zynq/Kconfig"
 source "board/xilinx/zynqmp/Kconfig"

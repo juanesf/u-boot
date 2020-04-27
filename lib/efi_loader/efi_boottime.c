@@ -208,7 +208,7 @@ static void efi_process_event_queue(void)
  */
 static void efi_queue_event(struct efi_event *event)
 {
-	struct efi_event *item = NULL;
+	struct efi_event *item;
 
 	if (!event->notify_function)
 		return;
@@ -1882,12 +1882,12 @@ efi_status_t EFIAPI efi_load_image(bool boot_policy,
 	efi_dp_split_file_path(file_path, &dp, &fp);
 	ret = efi_setup_loaded_image(dp, fp, image_obj, &info);
 	if (ret == EFI_SUCCESS)
-		ret = efi_load_pe(*image_obj, dest_buffer, info);
+		ret = efi_load_pe(*image_obj, dest_buffer, source_size, info);
 	if (!source_buffer)
 		/* Release buffer to which file was loaded */
 		efi_free_pages((uintptr_t)dest_buffer,
 			       efi_size_in_pages(source_size));
-	if (ret == EFI_SUCCESS) {
+	if (ret == EFI_SUCCESS || ret == EFI_SECURITY_VIOLATION) {
 		info->system_table = &systab;
 		info->parent_handle = parent_image;
 	} else {
@@ -2106,10 +2106,10 @@ static efi_status_t EFIAPI efi_set_watchdog_timer(unsigned long timeout,
  *
  * Return: status code
  */
-static efi_status_t EFIAPI efi_close_protocol(efi_handle_t handle,
-					      const efi_guid_t *protocol,
-					      efi_handle_t agent_handle,
-					      efi_handle_t controller_handle)
+efi_status_t EFIAPI efi_close_protocol(efi_handle_t handle,
+				       const efi_guid_t *protocol,
+				       efi_handle_t agent_handle,
+				       efi_handle_t controller_handle)
 {
 	struct efi_handler *handler;
 	struct efi_open_protocol_info_item *item;
@@ -2282,7 +2282,7 @@ static efi_status_t EFIAPI efi_protocols_per_handle(
  *
  * Return: status code
  */
-static efi_status_t EFIAPI efi_locate_handle_buffer(
+efi_status_t EFIAPI efi_locate_handle_buffer(
 			enum efi_locate_search_type search_type,
 			const efi_guid_t *protocol, void *search_key,
 			efi_uintn_t *no_handles, efi_handle_t **buffer)
@@ -2885,9 +2885,15 @@ efi_status_t EFIAPI efi_start_image(efi_handle_t image_handle,
 
 	EFI_ENTRY("%p, %p, %p", image_handle, exit_data_size, exit_data);
 
+	if (!efi_search_obj(image_handle))
+		return EFI_EXIT(EFI_INVALID_PARAMETER);
+
 	/* Check parameters */
 	if (image_obj->header.type != EFI_OBJECT_TYPE_LOADED_IMAGE)
 		return EFI_EXIT(EFI_INVALID_PARAMETER);
+
+	if (image_obj->auth_status != EFI_IMAGE_AUTH_PASSED)
+		return EFI_EXIT(EFI_SECURITY_VIOLATION);
 
 	ret = EFI_CALL(efi_open_protocol(image_handle, &efi_guid_loaded_image,
 					 &info, NULL, NULL,
@@ -3182,9 +3188,9 @@ out:
  *
  * Return: status code
  */
-static efi_status_t EFIAPI efi_handle_protocol(efi_handle_t handle,
-					       const efi_guid_t *protocol,
-					       void **protocol_interface)
+efi_status_t EFIAPI efi_handle_protocol(efi_handle_t handle,
+					const efi_guid_t *protocol,
+					void **protocol_interface)
 {
 	return efi_open_protocol(handle, protocol, protocol_interface, efi_root,
 				 NULL, EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
