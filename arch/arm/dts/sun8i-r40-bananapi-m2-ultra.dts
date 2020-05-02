@@ -160,6 +160,10 @@
 	};
 };
 
+&hdmi_sound {
+	status = "okay";
+};
+
 &i2c0 {
 	status = "okay";
 
@@ -171,12 +175,12 @@
 	};
 };
 
-&ir0 {
+&i2s2 {
 	status = "okay";
 };
 
-&ir1 {
-	status = "disabled";
+&ir0 {
+	status = "okay";
 };
 
 #include "axp22x.dtsi"
