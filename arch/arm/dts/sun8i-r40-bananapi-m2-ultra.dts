@@ -117,8 +117,8 @@
 	allwinner,audio-routing =
 		"Headphone", "HP",
 //		"Line Out", "LINEOUT",
-		"MIC1", "Mic",
-		"Mic",  "MBIAS";
+		"MIC1", "MBIAS",
+		"MIC1", "mic";
 	status = "okay";
 };
 
