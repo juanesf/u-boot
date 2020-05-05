@@ -693,7 +693,7 @@
 
 		codec: codec@1c22c00 {
 			#sound-dai-cells = <1>;
-			compatible = "allwinner,sun8i-h3-codec";
+			compatible = "allwinner,sun8i-a23-codec";
 			reg = <0x01c22c00 0x300>;
 			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_CODEC>, <&ccu CLK_CODEC>;
@@ -922,8 +922,9 @@
 			compatible = "allwinner,sun8i-r40-mbus";
 			reg = <0x01c62000 0x1000>;
 			clocks = <&ccu 155>;
-			dma-ranges = <0x00000000 0x40000000 0x80000000>;
-			#address-cells = <1>;
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 			dma-ranges = <0x00000000 0x40000000 0x80000000>;
 			#interconnect-cells = <1>;
 		};
 
