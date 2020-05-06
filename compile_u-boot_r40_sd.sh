@@ -2,7 +2,7 @@
 ###compile uboot m2u
 echo "\033[36m Compile U-boot sd for M2U(R40).\033[0m"
 echo "\033[36m Installing dependencies.\033[0m"
-sudo apt update && sudo apt install -y swig python-dev python3-dev git
+sudo apt update && sudo apt install -y swig python-dev python3-dev git make gcc flex bison
 echo "\033[36m changing folder.\033[0m"
 cd /tmp
 echo "\033[36m cloning u-boot.\033[0m"
