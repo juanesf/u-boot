@@ -125,10 +125,6 @@
 	status = "okay";
 };
 
-&dai {
-	status = "okay";
-};
-
 &de {
 	status = "okay";
 };
