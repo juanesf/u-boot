@@ -118,11 +118,6 @@
 	status = "okay";
 };
 
-&codec_analog {
-//	cpvdd-supply = <&reg_dcdc1>;
-	status = "okay";
-};
-
 &dai {
 	status = "okay";
 };
