@@ -240,7 +240,7 @@
 			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_DMA>;
 			resets = <&ccu RST_BUS_DMA>;
-			#dma-cells = <2>;
+			#dma-cells = <1>;
 		};
 
 		spi0: spi@1c05000 {
