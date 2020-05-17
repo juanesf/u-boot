@@ -117,11 +117,10 @@
 &codec {
 	allwinner,audio-routing =
 		"Headphone", "HP",
-//		"Headphone", "HPCOM",
+		"Headphone", "HPCOM",
 		"Line In", "LINEIN",
 		"MIC1", "MBIAS",
 		"MIC1", "Mic",
-//		"MIC2", "HBIAS",
 		"MIC2", "Headset Mic";
 	status = "okay";
 };
