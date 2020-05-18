@@ -132,7 +132,7 @@
 		simple-audio-card,format = "i2s";
 		simple-audio-card,name = "sun8i-r40-hdmi";
 		simple-audio-card,mclk-fs = <128>;
-//		simple-audio-card,frame-inversion;
+		simple-audio-card,frame-inversion;
 		status = "disabled";
 
 		simple-audio-card,codec {
@@ -702,8 +702,7 @@
 		};
 
 		i2s0: i2s@1c22000 {
-			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-h3-i2s";
+			compatible = "allwinner,sun6i-a31-i2s";
 			reg = <0x01c22000 0x400>;
 			interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_I2S0>, <&ccu CLK_I2S0>;
@@ -715,8 +714,7 @@
 		};
 
 		i2s1: i2s@1c22400 {
-			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-h3-i2s";
+			compatible = "allwinner,sun6i-a31-i2s";
 			reg = <0x01c22400 0x400>;
 			interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_I2S1>, <&ccu CLK_I2S1>;
@@ -729,7 +727,7 @@
 
 		i2s2: i2s@1c22800 {
 			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-h3-i2s";
+			compatible = "allwinner,sun6i-a31-i2s";
 			reg = <0x01c22800 0x400>;
 			interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_I2S2>, <&ccu CLK_I2S2>;
@@ -737,12 +735,12 @@
 			dmas = <&dma 27>;
 			resets = <&ccu RST_BUS_I2S2>;
 			dma-names = "tx";
-//			allwinner,playback-channels = <8>;
+			allwinner,playback-channels = <8>;
 			status = "disabled";
 		};
 
 		codec: codec@1c22c00 {
-			#sound-dai-cells = <1>;
+			#sound-dai-cells = <0>;
 			compatible = "allwinner,sun8i-h3-codec";
 			reg = <0x01c22c00 0x300>;
 			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
