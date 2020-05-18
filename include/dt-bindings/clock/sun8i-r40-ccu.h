@@ -51,7 +51,7 @@
 #define CLK_PLL_VIDEO0		7
 #define CLK_PLL_VIDEO0_2X	8
 #define CLK_PLL_VE			9
-#define CLK_PLL_DDR0		10
+
 #define CLK_PLL_PERIPH0		11
 #define CLK_PLL_PERIPH0_SATA	12
 #define CLK_PLL_PERIPH0_2X	13
