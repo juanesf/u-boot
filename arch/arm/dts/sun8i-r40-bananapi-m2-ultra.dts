@@ -53,7 +53,9 @@
 	aliases {
 		ethernet0 = &gmac;
 		serial0 = &uart0;
-		serial3 = &uart3;
+		serial1 = &uart3;
+		serial2 = &uart4;
+		serial3 = &uart5;
 	};
 
 	chosen {
@@ -197,6 +199,7 @@
 };
 
 &i2s2 {
+	allwinner,playback-channels = <8>;
 	status = "okay";
 };
 
@@ -342,10 +345,10 @@
 	status = "okay";
 	/*
 	 * On board 40-pin GPIO header
-	 * SPI1-MOSI pin_08
-	 * SPI1-MISO pin_10
-	 * SPI1-CLK  pin_12
-	 * SPI1-CS0  pin_16
+	 * SPI0-MOSI pin_19
+	 * SPI0-MISO pin_21
+	 * SPI0-CLK  pin_23
+	 * SPI0-CS0  pin_24
 	 */
 };
 
