@@ -128,6 +128,10 @@
 	status = "okay";
 };
 
+&codec_analog {
+	status = "okay";
+};
+
 &de {
 	status = "okay";
 };

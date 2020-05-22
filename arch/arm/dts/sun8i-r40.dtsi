@@ -255,7 +255,7 @@
 		};
 
 		dma: dma-controller@1c02000 {
-			compatible = "allwinner,sun8i-a23-dma";
+			compatible = "allwinner,sun6i-a31-dma";
 			reg = <0x01c02000 0x1000>;
 			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_DMA>;
