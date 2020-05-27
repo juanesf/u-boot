@@ -5,10 +5,12 @@
  */
 
 #include <common.h>
+#include <log.h>
 #include <usb.h>
 #include <errno.h>
 #include <wait_bit.h>
 #include <linux/compiler.h>
+#include <linux/delay.h>
 #include <usb/ehci-ci.h>
 #include <asm/io.h>
 #include <asm/arch/imx-regs.h>
@@ -380,6 +382,14 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 	if (index > 3)
 		return -EINVAL;
 
+	if (CONFIG_IS_ENABLED(IMX_MODULE_FUSE)) {
+		if (usb_fused((ulong)ehci)) {
+			printf("SoC fuse indicates USB@0x%lx is unavailable.\n",
+			       (ulong)ehci);
+			return	-ENODEV;
+		}
+	}
+
 	ret = ehci_mx6_common_init(ehci, index);
 	if (ret)
 		return ret;
@@ -576,6 +586,14 @@ static int ehci_usb_probe(struct udevice *dev)
 	struct ehci_hccr *hccr;
 	struct ehci_hcor *hcor;
 	int ret;
+
+	if (CONFIG_IS_ENABLED(IMX_MODULE_FUSE)) {
+		if (usb_fused((ulong)ehci)) {
+			printf("SoC fuse indicates USB@0x%lx is unavailable.\n",
+			       (ulong)ehci);
+			return -ENODEV;
+		}
+	}
 
 	priv->ehci = ehci;
 	priv->portnr = dev->seq;

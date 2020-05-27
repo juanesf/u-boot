@@ -8,6 +8,7 @@
 #include <dm.h>
 #include <dm/devres.h>
 #include <generic-phy.h>
+#include <log.h>
 
 static inline struct phy_ops *phy_dev_ops(struct udevice *dev)
 {
@@ -32,7 +33,7 @@ static int generic_phy_xlate_offs_flags(struct phy *phy,
 	return 0;
 }
 
-int generic_phy_get_by_node(ofnode node, int index, struct phy *phy)
+int generic_phy_get_by_index_nodev(ofnode node, int index, struct phy *phy)
 {
 	struct ofnode_phandle_args args;
 	struct phy_ops *ops;
@@ -94,7 +95,7 @@ err:
 int generic_phy_get_by_index(struct udevice *dev, int index,
 			     struct phy *phy)
 {
-	return generic_phy_get_by_node(dev_ofnode(dev), index, phy);
+	return generic_phy_get_by_index_nodev(dev_ofnode(dev), index, phy);
 }
 
 int generic_phy_get_by_name(struct udevice *dev, const char *phy_name,
@@ -117,7 +118,7 @@ int generic_phy_init(struct phy *phy)
 {
 	struct phy_ops const *ops;
 
-	if (!phy)
+	if (!generic_phy_valid(phy))
 		return 0;
 	ops = phy_dev_ops(phy->dev);
 
@@ -128,7 +129,7 @@ int generic_phy_reset(struct phy *phy)
 {
 	struct phy_ops const *ops;
 
-	if (!phy)
+	if (!generic_phy_valid(phy))
 		return 0;
 	ops = phy_dev_ops(phy->dev);
 
@@ -139,7 +140,7 @@ int generic_phy_exit(struct phy *phy)
 {
 	struct phy_ops const *ops;
 
-	if (!phy)
+	if (!generic_phy_valid(phy))
 		return 0;
 	ops = phy_dev_ops(phy->dev);
 
@@ -150,7 +151,7 @@ int generic_phy_power_on(struct phy *phy)
 {
 	struct phy_ops const *ops;
 
-	if (!phy)
+	if (!generic_phy_valid(phy))
 		return 0;
 	ops = phy_dev_ops(phy->dev);
 
@@ -161,7 +162,7 @@ int generic_phy_power_off(struct phy *phy)
 {
 	struct phy_ops const *ops;
 
-	if (!phy)
+	if (!generic_phy_valid(phy))
 		return 0;
 	ops = phy_dev_ops(phy->dev);
 
