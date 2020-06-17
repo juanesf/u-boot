@@ -1,6 +1,6 @@
 /*
- * Copyright 2017 Chen-Yu Tsai <wens@csie.org>
- * Copyright 2017 Icenowy Zheng <icenowy@aosc.io>
+ * Copyright (C) 2017 Chen-Yu Tsai <wens@csie.org>
+ * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
  *
  * This file is dual-licensed: you can use it either under the terms
  * of the GPL or the X11 license, at your option. Note that this dual
@@ -144,20 +144,25 @@
 
 	hdmi_sound: hdmi-sound {
 		compatible = "simple-audio-card";
-		simple-audio-card,format = "i2s";
 		simple-audio-card,name = "allwinner-hdmi";
+		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <128>;
-//		simple-audio-card,frame-inversion;
+		simple-audio-card,frame-inversion;
+		simple-audio-card,routing =
+			"Left DAC", "DAC Left",
+			"Right DAC", "DAC Right",
+			"ADC Left", "Left ADC",
+			"ADC Right", "Right ADC";
 		status = "disabled";
-
-		simple-audio-card,codec {
-			sound-dai = <&hdmi>;
-		};
 
 		simple-audio-card,cpu {
 			sound-dai = <&i2s2>;
 			dai-tdm-slot-num = <2>;
 			dai-tdm-slot-width = <32>;
+		};
+		
+		simple-audio-card,codec {
+			sound-dai = <&hdmi>;
 		};
 	};
 
@@ -285,12 +290,11 @@
 		};
 
 		dma: dma-controller@1c02000 {
-			compatible = "allwinner,sun4i-a10-dma";
+			compatible = "allwinner,sun6i-a31-dma";
 			reg = <0x01c02000 0x1000>;
 			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-//			clocks = <&ccu CLK_AHB_DMA>;
 			clocks = <&ccu CLK_BUS_DMA>;
-//			resets = <&ccu RST_BUS_DMA>;
+			resets = <&ccu RST_BUS_DMA>;
 			#dma-cells = <1>;
 		};
 
@@ -769,23 +773,22 @@
 			status = "disabled";
 		};
 
-		i2s2: i2s@1c22800 {
+		i2s2: i2s2@1c22800 {
 			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun4i-a10-i2s";
+			compatible = "allwinner,sun6i-a31-i2s";
 			reg = <0x01c22800 0x400>;
 			interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_I2S2>, <&ccu CLK_I2S2>;
 			clock-names = "apb", "mod";
 			resets = <&ccu RST_BUS_I2S2>;
-			dma-names = "rx", "tx";
 			dmas = <&dma 6>, <&dma 6>;
+			dma-names = "rx", "tx";
 			status = "disabled";
 		};
 
 		codec: codec@1c22c00 {
 			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-h3-codec";
-//			compatible = "allwinner,sun7i-a20-codec";
+			compatible = "allwinner,sun8i-r40-codec";
 			reg = <0x01c22c00 0x40>;
 			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_CODEC>, <&ccu CLK_CODEC>;

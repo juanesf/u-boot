@@ -56,6 +56,8 @@
 		serial1 = &uart3;
 		serial2 = &uart4;
 		serial3 = &uart5;
+		spi0 = &spi0;
+		spi1 = &spi1;
 	};
 
 	chosen {
@@ -125,10 +127,6 @@
 		"MIC1", "Mic",
 		"MIC2", "Headset Mic";
 		allwinner,codec-analog-controls = <&codec_analog>;
-	status = "okay";
-};
-
-&codec_analog {
 	status = "okay";
 };
 
@@ -259,6 +257,14 @@
 	vcc-pg-supply = <&reg_dldo1>;
 };
 
+&ac_power_supply {
+		status = "okay";
+};
+
+&battery_power_supply {
+		status = "okay";
+};
+
 &reg_aldo2 {
 	regulator-min-microvolt = <2500000>;
 	regulator-max-microvolt = <2500000>;
@@ -347,6 +353,8 @@
 
 &spi0 {
 	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_pc_pins>,
+		<&spi0_cs0_pc_pin>;
 	status = "okay";
 	/*
 	 * On board 40-pin GPIO header
@@ -359,6 +367,8 @@
 
 &spi1 {
 	pinctrl-names = "default";
+	pinctrl-0 = <&spi1_pi_pins>,
+		<&spi1_cs0_pi_pin>;
 	status = "okay";
 	/*
 	 * On board 40-pin GPIO header
