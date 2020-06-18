@@ -180,6 +180,15 @@
 			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
 		};
 
+		dma: dma-controller@1c02000 {
+			compatible = "allwinner,sun6i-a31-dma";
+			reg = <0x01c02000 0x1000>;
+			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_DMA>;
+			resets = <&ccu RST_BUS_DMA>;
+			#dma-cells = <1>;
+		};
+
 		mmc0: mmc@1c0f000 {
 			compatible = "allwinner,sun8i-r40-mmc",
 				     "allwinner,sun50i-a64-mmc";
@@ -409,6 +418,24 @@
 		wdt: watchdog@1c20c90 {
 			compatible = "allwinner,sun4i-a10-wdt";
 			reg = <0x01c20c90 0x10>;
+		};
+
+		codec: codec@1c22c00 {
+			#sound-dai-cells = <0>;
+			compatible = "allwinner,sun8i-r40-codec";
+			reg = <0x01c22c00 0x40>;
+			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_CODEC>, <&ccu CLK_CODEC>;
+			clock-names = "apb", "codec";
+			resets = <&ccu RST_BUS_CODEC>;
+			dmas = <&dma 19>, <&dma 19>;
+			dma-names = "rx", "tx";
+			status = "disabled";
+		};
+
+		codec_analog: codec-analog@1c22f00 {
+			compatible = "allwinner,sun8i-r40-codec-analog";
+			reg = <0x01c22f00 0x4>;
 		};
 
 		uart0: serial@1c28000 {
