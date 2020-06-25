@@ -115,6 +115,7 @@
 		"MIC1", "MBIAS",
 		"MIC1", "Mic",
 		"MIC2", "Headset Mic";
+		allwinner,codec-analog-controls = <&codec_analog>;
 	status = "okay";
 };
 
