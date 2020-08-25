@@ -127,21 +127,6 @@
 		};
 	};
 
-	reserved-memory {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges;
-
-		/* Address must be kept in the lower 256 MiBs of DRAM for VE. */
-		default-pool {
-			compatible = "shared-dma-pool";
-			size = <0x6000000>;
-			alloc-ranges = <0x4a000000 0x6000000>;
-			reusable;
-			linux,cma-default;
-		};
-	};
-
 	hdmi_sound: hdmi-sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "allwinner-hdmi";
@@ -290,10 +275,13 @@
 		};
 
 		dma: dma-controller@1c02000 {
-			compatible = "allwinner,sun6i-a31-dma";
+			compatible = "allwinner,sun8i-r40-dma",
+				     "allwinner,sun50i-a64-dma";
 			reg = <0x01c02000 0x1000>;
 			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_DMA>;
+			dma-channels = <16>;
+			dma-requests = <31>;
 			resets = <&ccu RST_BUS_DMA>;
 			#dma-cells = <1>;
 		};
