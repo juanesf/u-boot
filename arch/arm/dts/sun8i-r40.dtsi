@@ -574,12 +574,12 @@
 				function = "i2c4";
 			};
 
-			ir0_pins: ir0-rx-pins {
+			ir0_pins: ir0-pins {
 				pins = "PB4";
 				function = "ir0";
 			};
 
-			ir1_pins: ir1-rx-pins {
+			ir1_pins: ir1-pins {
 				pins = "PB23";
 				function = "ir1";
 			};
