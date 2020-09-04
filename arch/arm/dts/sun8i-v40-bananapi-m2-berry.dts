@@ -164,15 +164,11 @@
 	};
 };
 
+#include "axp22x.dtsi"
+
 &ir0 {
 	status = "okay";
 };
-
-&ir1 {
-	status = "disabled";
-};
-
-#include "axp22x.dtsi"
 
 &mmc0 {
 	vmmc-supply = <&reg_dcdc1>;

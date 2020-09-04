@@ -125,7 +125,6 @@
 		"Line In", "LINEIN",
 		"MIC1", "MBIAS",
 		"MIC1", "Mic",
-		"MIC2", "Headset Mic";
 		allwinner,codec-analog-controls = <&codec_analog>;
 	status = "okay";
 };
@@ -206,11 +205,11 @@
 	status = "okay";
 };
 
+#include "axp22x.dtsi"
+
 &ir0 {
 	status = "okay";
 };
-
-#include "axp22x.dtsi"
 
 &mmc0 {
 	vmmc-supply = <&reg_dcdc1>;
