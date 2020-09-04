@@ -124,8 +124,8 @@
 		"Headphone", "HPCOM",
 		"Line In", "LINEIN",
 		"MIC1", "MBIAS",
-		"MIC1", "Mic",
-		allwinner,codec-analog-controls = <&codec_analog>;
+		"MIC1", "Mic";
+	allwinner,codec-analog-controls = <&codec_analog>;
 	status = "okay";
 };
 
