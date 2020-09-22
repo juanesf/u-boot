@@ -53,6 +53,11 @@
 	aliases {
 		ethernet0 = &gmac;
 		serial0 = &uart0;
+		serial1 = &uart3;
+		serial2 = &uart4;
+		serial3 = &uart5;
+		spi0 = &spi0;
+		spi1 = &spi1;
 	};
 
 	chosen {
@@ -95,7 +100,7 @@
 		regulator-name = "vcc5v0";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpio = <&pio 7 23 GPIO_ACTIVE_HIGH>; /* PH23 */
+		gpios = <&pio 7 23 GPIO_ACTIVE_HIGH>; /* PH23 */
 		enable-active-high;
 	};
 
@@ -117,10 +122,9 @@
 	allwinner,audio-routing =
 		"Headphone", "HP",
 		"Headphone", "HPCOM",
-		"Line In", "LINEIN",
-		"MIC1", "MBIAS",
-		"MIC1", "Mic";
-		allwinner,codec-analog-controls = <&codec_analog>;
+		"MIC1", "Mic",
+		"Mic", "MBIAS",
+	allwinner,codec-analog-controls = <&codec_analog>;
 	status = "okay";
 };
 
@@ -171,6 +175,29 @@
 		interrupt-parent = <&nmi_intc>;
 		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
 	};
+};
+
+&i2c2 {
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * I2C2-SDA pin_03
+	 * I2C2-SCK pin_05
+	 */
+};
+
+&i2c3 {
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * I2C3-SDA pin_27
+	 * I2C3-SCK pin_28
+	 */
+};
+
+&i2s2 {
+	allwinner,playback-channels = <8>;
+	status = "okay";
 };
 
 #include "axp22x.dtsi"
@@ -310,6 +337,34 @@
 	regulator-name = "vdd1v2-sata";
 };
 
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_pc_pins>,
+		<&spi0_cs0_pc_pin>;
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * SPI0-MOSI pin_19
+	 * SPI0-MISO pin_21
+	 * SPI0-CLK  pin_23
+	 * SPI0-CS0  pin_24
+	 */
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi1_pi_pins>,
+		<&spi1_cs0_pi_pin>;
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * SPI1-MOSI pin_08
+	 * SPI1-MISO pin_10
+	 * SPI1-CLK  pin_12
+	 * SPI1-CS0  pin_16
+	 */
+};
+
 &tcon_tv0 {
 	status = "okay";
 };
@@ -337,6 +392,28 @@
 		shutdown-gpios = <&pio 7 12 GPIO_ACTIVE_HIGH>; /* PH12 */
 		max-speed = <1500000>;
 	};
+};
+
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart4_ph_pins>;
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * UART4-TX pin_37
+	 * UART4-RX pin_40
+	 */
+};
+
+&uart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart5_ph_pins>;
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * UART5-TX pin_38
+	 * UART5-RX pin_36
+	 */
 };
 
 &usbphy {

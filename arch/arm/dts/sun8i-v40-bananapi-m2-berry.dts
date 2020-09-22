@@ -89,7 +89,7 @@
 		regulator-name = "vcc5v0";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpio = <&pio 7 23 GPIO_ACTIVE_HIGH>; /* PH23 */
+		gpios = <&pio 7 23 GPIO_ACTIVE_HIGH>; /* PH23 */
 		enable-active-high;
 	};
 
@@ -111,11 +111,9 @@
 	allwinner,audio-routing =
 		"Headphone", "HP",
 		"Headphone", "HPCOM",
-		"Line In", "LINEIN",
-		"MIC1", "MBIAS",
 		"MIC1", "Mic",
-		"MIC2", "Headset Mic";
-		allwinner,codec-analog-controls = <&codec_analog>;
+		"Mic", "MBIAS";
+	allwinner,codec-analog-controls = <&codec_analog>;
 	status = "okay";
 };
 
