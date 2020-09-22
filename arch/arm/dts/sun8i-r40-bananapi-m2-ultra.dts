@@ -123,7 +123,7 @@
 		"Headphone", "HP",
 		"Headphone", "HPCOM",
 		"MIC1", "Mic",
-		"Mic", "MBIAS";
+		"Mic", "MBIAS",
 	allwinner,codec-analog-controls = <&codec_analog>;
 	status = "okay";
 };
@@ -249,14 +249,6 @@
 	vcc-pe-supply = <&reg_eldo1>;
 	vcc-pf-supply = <&reg_dcdc1>;
 	vcc-pg-supply = <&reg_dldo1>;
-};
-
-&ac_power_supply {
-		status = "okay";
-};
-
-&battery_power_supply {
-		status = "okay";
 };
 
 &reg_aldo2 {
