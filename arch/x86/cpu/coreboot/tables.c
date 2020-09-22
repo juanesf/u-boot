@@ -10,6 +10,8 @@
 #include <net.h>
 #include <asm/arch/sysinfo.h>
 
+DECLARE_GLOBAL_DATA_PTR;
+
 /*
  * This needs to be in the .data section so that it's copied over during
  * relocation. By default it's put in the .bss section which is simply filled
@@ -67,6 +69,17 @@ static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 
 	info->vbnv_start = vbnv->vbnv_start;
 	info->vbnv_size = vbnv->vbnv_size;
+}
+
+static void cb_parse_cbmem_entry(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_cbmem_entry *entry = (struct cb_cbmem_entry *)ptr;
+
+	if (entry->id != CBMEM_ID_SMBIOS)
+		return;
+
+	info->smbios_start = entry->address;
+	info->smbios_size = entry->entry_size;
 }
 
 static void cb_parse_gpios(unsigned char *ptr, struct sysinfo_t *info)
@@ -206,6 +219,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_VBNV:
 			cb_parse_vbnv(ptr, info);
 			break;
+		case CB_TAG_CBMEM_ENTRY:
+			cb_parse_cbmem_entry(ptr, info);
+			break;
 		default:
 			cb_parse_unhandled(rec->tag, ptr);
 			break;
@@ -229,6 +245,10 @@ int get_coreboot_info(struct sysinfo_t *info)
 	if (addr < 0)
 		return addr;
 	ret = cb_parse_header((void *)addr, 0x1000, info);
+	if (!ret)
+		return -ENOENT;
+	gd->arch.coreboot_table = addr;
+	gd->flags |= GD_FLG_SKIP_LL_INIT;
 
-	return ret == 1 ? 0 : -ENOENT;
+	return 0;
 }
