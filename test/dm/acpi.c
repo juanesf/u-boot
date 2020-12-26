@@ -366,21 +366,21 @@ static int dm_test_acpi_cmd_list(struct unit_test_state *uts)
 	ut_assert_nextline("RSDP %08lx %06lx (v02 U-BOOT)", addr,
 			   sizeof(struct acpi_rsdp));
 	addr = ALIGN(addr + sizeof(struct acpi_rsdp), 16);
-	ut_assert_nextline("RSDT %08lx %06lx (v01 U-BOOT U-BOOTBL %u INTL 0)",
+	ut_assert_nextline("RSDT %08lx %06lx (v01 U-BOOT U-BOOTBL %x INTL 0)",
 			   addr, sizeof(struct acpi_table_header) +
 			   3 * sizeof(u32), U_BOOT_BUILD_DATE);
 	addr = ALIGN(addr + sizeof(struct acpi_rsdt), 16);
-	ut_assert_nextline("XSDT %08lx %06lx (v01 U-BOOT U-BOOTBL %u INTL 0)",
+	ut_assert_nextline("XSDT %08lx %06lx (v01 U-BOOT U-BOOTBL %x INTL 0)",
 			   addr, sizeof(struct acpi_table_header) +
 			   3 * sizeof(u64), U_BOOT_BUILD_DATE);
 	addr = ALIGN(addr + sizeof(struct acpi_xsdt), 64);
-	ut_assert_nextline("DMAR %08lx %06lx (v01 U-BOOT U-BOOTBL %u INTL 0)",
+	ut_assert_nextline("DMAR %08lx %06lx (v01 U-BOOT U-BOOTBL %x INTL 0)",
 			   addr, sizeof(struct acpi_dmar), U_BOOT_BUILD_DATE);
 	addr = ALIGN(addr + sizeof(struct acpi_dmar), 16);
-	ut_assert_nextline("DMAR %08lx %06lx (v01 U-BOOT U-BOOTBL %u INTL 0)",
+	ut_assert_nextline("DMAR %08lx %06lx (v01 U-BOOT U-BOOTBL %x INTL 0)",
 			   addr, sizeof(struct acpi_dmar), U_BOOT_BUILD_DATE);
 	addr = ALIGN(addr + sizeof(struct acpi_dmar), 16);
-	ut_assert_nextline("DMAR %08lx %06lx (v01 U-BOOT U-BOOTBL %u INTL 0)",
+	ut_assert_nextline("DMAR %08lx %06lx (v01 U-BOOT U-BOOTBL %x INTL 0)",
 			   addr, sizeof(struct acpi_dmar), U_BOOT_BUILD_DATE);
 	ut_assert_console_end();
 
@@ -477,6 +477,7 @@ static int dm_test_acpi_fill_ssdt(struct unit_test_state *uts)
 	buf = malloc(BUF_SIZE);
 	ut_assertnonnull(buf);
 
+	acpi_reset_items();
 	ctx.current = buf;
 	buf[4] = 'z';	/* sentinel */
 	ut_assertok(acpi_fill_ssdt(&ctx));
@@ -507,6 +508,7 @@ static int dm_test_acpi_inject_dsdt(struct unit_test_state *uts)
 	buf = malloc(BUF_SIZE);
 	ut_assertnonnull(buf);
 
+	acpi_reset_items();
 	ctx.current = buf;
 	buf[4] = 'z';	/* sentinel */
 	ut_assertok(acpi_inject_dsdt(&ctx));
@@ -537,6 +539,7 @@ static int dm_test_acpi_cmd_items(struct unit_test_state *uts)
 	buf = malloc(BUF_SIZE);
 	ut_assertnonnull(buf);
 
+	acpi_reset_items();
 	ctx.current = buf;
 	ut_assertok(acpi_fill_ssdt(&ctx));
 	console_record_reset();
@@ -545,6 +548,7 @@ static int dm_test_acpi_cmd_items(struct unit_test_state *uts)
 	ut_assert_nextline("dev 'acpi-test2', type 1, size 2");
 	ut_assert_console_end();
 
+	acpi_reset_items();
 	ctx.current = buf;
 	ut_assertok(acpi_inject_dsdt(&ctx));
 	console_record_reset();

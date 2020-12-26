@@ -17,7 +17,7 @@ You could install GCC and the GCC cross compiler for the ARMv8 architecture with
 
 .. code-block:: bash
 
-    sudo apt-get gcc gcc-aarch64-linux-gnu
+    sudo apt-get install gcc gcc-aarch64-linux-gnu
 
 Depending on the build targets further packages maybe needed
 
@@ -28,6 +28,26 @@ Depending on the build targets further packages maybe needed
       libguestfs-tools libncurses-dev libpython3-dev libsdl2-dev libssl-dev \
       lzma-alone openssl python3 python3-coverage python3-pyelftools \
       python3-pytest python3-sphinxcontrib.apidoc python3-sphinx-rtd-theme swig
+
+SUSE based
+~~~~~~~~~~
+
+On suse based systems the cross compiler packages are named
+cross-<architecture>-gcc<version>.
+
+You could install GCC and the GCC 10 cross compiler for the ARMv8 architecture
+with
+
+.. code-block:: bash
+
+    sudo zypper install gcc cross-aarch64-gcc10
+
+Depending on the build targets further packages maybe needed.
+
+.. code-block:: bash
+
+    zypper install bc bison flex gcc libopenssl-devel libSDL2-devel make \
+      ncurses-devel python3-devel python3-pytest swig
 
 Prerequisites
 -------------
