@@ -6,6 +6,8 @@
 #ifndef _CONFIG_MVEBU_ARMADA_37XX_H
 #define _CONFIG_MVEBU_ARMADA_37XX_H
 
+#include <linux/sizes.h>
+
 /*
  * High Level Configuration Options (easy to change)
  */
@@ -13,7 +15,7 @@
 /* additions for new ARM relocation support */
 #define CONFIG_SYS_SDRAM_BASE	0x00000000
 
-/* auto boot */
+#define CONFIG_SYS_BOOTM_LEN	SZ_64M /* Increase max gunzip size */
 
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, \
 					  115200, 230400, 460800, 921600 }
@@ -53,10 +55,7 @@
 /*
  * SPI Flash configuration
  */
-
 #define CONFIG_MTD_PARTITIONS		/* required for UBI partition support */
-
-/* Environment in SPI NOR flash */
 
 /*
  * Ethernet Driver configuration
@@ -65,8 +64,6 @@
 #define CONFIG_NET_RETRY_COUNT	50
 
 #define CONFIG_USB_MAX_CONTROLLER_COUNT (3 + 3)
-
-/* USB ethernet */
 
 /*
  * SATA/SCSI/AHCI configuration
