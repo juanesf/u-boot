@@ -638,7 +638,7 @@ static int pcie_advk_probe(struct udevice *dev)
 		dev_warn(pcie->dev, "PCIE Reset on GPIO support is missing\n");
 	}
 
-	pcie->first_busno = dev->seq;
+	pcie->first_busno = dev_seq(dev);
 	pcie->dev = pci_get_controller(dev);
 
 	return pcie_advk_setup_hw(pcie);
@@ -649,9 +649,6 @@ static int pcie_advk_remove(struct udevice *dev)
 	struct pcie_advk *pcie = dev_get_priv(dev);
 	u32 reg;
 
-	if (dm_gpio_is_valid(&pcie->reset_gpio))
-		dm_gpio_set_value(&pcie->reset_gpio, 1);
-
 	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
 	reg &= ~LINK_TRAINING_EN;
 	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
@@ -660,7 +657,7 @@ static int pcie_advk_remove(struct udevice *dev)
 }
 
 /**
- * pcie_advk_ofdata_to_platdata() - Translate from DT to device state
+ * pcie_advk_of_to_plat() - Translate from DT to device state
  *
  * @dev: A pointer to the device being operated on
  *
@@ -670,7 +667,7 @@ static int pcie_advk_remove(struct udevice *dev)
  *
  * Return: 0 on success, else -EINVAL
  */
-static int pcie_advk_ofdata_to_platdata(struct udevice *dev)
+static int pcie_advk_of_to_plat(struct udevice *dev)
 {
 	struct pcie_advk *pcie = dev_get_priv(dev);
 
@@ -697,9 +694,9 @@ U_BOOT_DRIVER(pcie_advk) = {
 	.id			= UCLASS_PCI,
 	.of_match		= pcie_advk_ids,
 	.ops			= &pcie_advk_ops,
-	.ofdata_to_platdata	= pcie_advk_ofdata_to_platdata,
+	.of_to_plat	= pcie_advk_of_to_plat,
 	.probe			= pcie_advk_probe,
 	.remove			= pcie_advk_remove,
 	.flags			= DM_FLAG_OS_PREPARE,
-	.priv_auto_alloc_size	= sizeof(struct pcie_advk),
+	.priv_auto	= sizeof(struct pcie_advk),
 };
