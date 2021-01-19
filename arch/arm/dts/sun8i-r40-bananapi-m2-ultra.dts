@@ -53,11 +53,6 @@
 	aliases {
 		ethernet0 = &gmac;
 		serial0 = &uart0;
-		serial1 = &uart3;
-		serial2 = &uart4;
-		serial3 = &uart5;
-		spi0 = &spi0;
-		spi1 = &spi1;
 	};
 
 	chosen {
@@ -144,7 +139,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac_rgmii_pins>;
 	phy-handle = <&phy1>;
-	phy-mode = "rgmii";
+	phy-mode = "rgmii-id";
 	phy-supply = <&reg_dc1sw>;
 	status = "okay";
 };
@@ -183,15 +178,6 @@
 	 * On board 40-pin GPIO header
 	 * I2C2-SDA pin_03
 	 * I2C2-SCK pin_05
-	 */
-};
-
-&i2c3 {
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * I2C3-SDA pin_27
-	 * I2C3-SCK pin_28
 	 */
 };
 
@@ -340,7 +326,7 @@
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_pc_pins>,
-		<&spi0_cs0_pc_pin>;
+		<&spi0_cs0_pc_pin>, <&spi0_cs1_ph_pin>;
 	status = "okay";
 	/*
 	 * On board 40-pin GPIO header
@@ -348,20 +334,7 @@
 	 * SPI0-MISO pin_21
 	 * SPI0-CLK  pin_23
 	 * SPI0-CS0  pin_24
-	 */
-};
-
-&spi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&spi1_pi_pins>,
-		<&spi1_cs0_pi_pin>;
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * SPI1-MOSI pin_08
-	 * SPI1-MISO pin_10
-	 * SPI1-CLK  pin_12
-	 * SPI1-CS0  pin_16
+	 * SPI0-CS1  pin_26
 	 */
 };
 
@@ -373,6 +346,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_pb_pins>;
 	status = "okay";
+};
+
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pi_pins>;
+	status = "okay";
+	/*
+	 * On board 40-pin GPIO header
+	 * UART4-TX pin_18
+	 * UART4-RX pin_19
+	 */
 };
 
 &uart3 {
@@ -392,28 +376,6 @@
 		shutdown-gpios = <&pio 7 12 GPIO_ACTIVE_HIGH>; /* PH12 */
 		max-speed = <1500000>;
 	};
-};
-
-&uart4 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart4_ph_pins>;
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * UART4-TX pin_37
-	 * UART4-RX pin_40
-	 */
-};
-
-&uart5 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart5_ph_pins>;
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * UART5-TX pin_38
-	 * UART5-RX pin_36
-	 */
 };
 
 &usbphy {
