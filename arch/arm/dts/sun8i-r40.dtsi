@@ -608,6 +608,12 @@
 				pins = "PC23";
 				function = "spi0";
 			};
+			
+			/omit-if-no-ref/
+			spi0_cs1_ph_pin: spi0-cs1-ph-pin {
+				pins = "PH24";
+				function = "spi0";
+			};
 
 			/omit-if-no-ref/
 			spi1_pi_pins: spi1-pi-pins {
@@ -633,7 +639,7 @@
 			};
 			
 			uart2_pi_pins: uart2-pi-pins {
-				pins = "PI8", "PI10";
+				pins = "PI18", "PI19";
 				function = "uart2";
 			};
 
