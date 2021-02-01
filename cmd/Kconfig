@@ -122,6 +122,7 @@ config CMD_CONSOLE
 
 config CMD_CPU
 	bool "cpu"
+	depends on CPU
 	help
 	  Print information about available CPUs. This normally shows the
 	  number of CPUs, type (e.g. manufacturer, architecture, product or
@@ -927,6 +928,12 @@ config CMD_GPIO
 	help
 	  GPIO support.
 
+config CMD_PWM
+	bool "pwm"
+	depends on DM_PWM
+	help
+	  Control PWM channels, this allows invert/config/enable/disable PWM channels.
+
 config CMD_GPT
 	bool "GPT (GUID Partition Table) command"
 	select EFI_PARTITION
@@ -1033,6 +1040,14 @@ config CMD_LSBLK
 	help
 	  Print list of available block device drivers, and for each, the list
 	  of known block devices.
+
+config CMD_MBR
+	bool "MBR (Master Boot Record) command"
+	select DOS_PARTITION
+	select HAVE_BLOCK_DEVICE
+	help
+	  Enable the 'mbr' command to ready and write MBR (Master Boot Record)
+	  style partition tables.
 
 config CMD_MISC
 	bool "misc"

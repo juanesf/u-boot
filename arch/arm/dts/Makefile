@@ -110,6 +110,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
 
 dtb-$(CONFIG_ROCKCHIP_RK3328) += \
 	rk3328-evb.dtb \
+	rk3328-nanopi-r2s.dtb \
 	rk3328-roc-cc.dtb \
 	rk3328-rock64.dtb \
 	rk3328-rock-pi-e.dtb
@@ -611,9 +612,13 @@ dtb-$(CONFIG_MACH_SUN50I_H5) += \
 	sun50i-h5-orangepi-zero-plus2.dtb
 dtb-$(CONFIG_MACH_SUN50I_H6) += \
 	sun50i-h6-beelink-gs1.dtb \
+	sun50i-h6-orangepi-3.dtb \
 	sun50i-h6-orangepi-lite2.dtb \
 	sun50i-h6-orangepi-one-plus.dtb \
-	sun50i-h6-pine-h64.dtb
+	sun50i-h6-pine-h64.dtb \
+	sun50i-h6-tanix-tx6.dtb
+dtb-$(CONFIG_MACH_SUN50I_H616) += \
+	sun50i-h616-orangepi-zero2.dtb
 dtb-$(CONFIG_MACH_SUN50I) += \
 	sun50i-a64-amarula-relic.dtb \
 	sun50i-a64-bananapi-m64.dtb \
@@ -783,8 +788,10 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mn-ddr4-evk.dtb \
 	imx8mq-evk.dtb \
 	imx8mm-beacon-kit.dtb \
+	imx8mn-beacon-kit.dtb \
 	imx8mq-phanbell.dtb \
 	imx8mp-evk.dtb \
+	imx8mp-phyboard-pollux-rdk.dtb \
 	imx8mq-pico-pi.dtb
 
 dtb-$(CONFIG_ARCH_IMXRT) += imxrt1050-evk.dtb \
@@ -905,7 +912,8 @@ dtb-$(CONFIG_TARGET_SAMA5D2_XPLAINED) += \
 	at91-sama5d2_xplained.dtb
 
 dtb-$(CONFIG_TARGET_SAMA5D27_SOM1_EK) += \
-	at91-sama5d27_som1_ek.dtb
+	at91-sama5d27_som1_ek.dtb   \
+	at91-sama5d27_giantboard.dtb
 
 dtb-$(CONFIG_TARGET_SAMA5D27_WLSOM1_EK) += \
 	at91-sama5d27_wlsom1_ek.dtb
@@ -960,6 +968,7 @@ dtb-$(CONFIG_ARCH_BCM6858) += \
 dtb-$(CONFIG_TARGET_BCMNS3) += ns3-board.dtb
 
 dtb-$(CONFIG_ASPEED_AST2500) += ast2500-evb.dtb
+dtb-$(CONFIG_ASPEED_AST2600) += ast2600-evb.dtb
 
 dtb-$(CONFIG_ARCH_STI) += stih410-b2260.dtb
 

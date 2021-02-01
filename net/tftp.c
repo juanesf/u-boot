@@ -329,6 +329,12 @@ static void tftp_complete(void)
 			time_start * 1000, "/s");
 	}
 	puts("\ndone\n");
+	if (IS_ENABLED(CONFIG_CMD_BOOTEFI)) {
+		if (!tftp_put_active)
+			efi_set_bootdev("Net", "", tftp_filename,
+					map_sysmem(tftp_load_addr, 0),
+					net_boot_file_size);
+	}
 	net_set_state(NETLOOP_SUCCESS);
 }
 
@@ -624,8 +630,10 @@ static void tftp_handler(uchar *pkt, unsigned dest, struct in_addr sip,
 		tftp_cur_block++;
 		tftp_cur_block %= TFTP_SEQUENCE_SIZE;
 
-		if (tftp_state == STATE_SEND_RRQ)
+		if (tftp_state == STATE_SEND_RRQ) {
 			debug("Server did not acknowledge any options!\n");
+			tftp_next_ack = tftp_windowsize;
+		}
 
 		if (tftp_state == STATE_SEND_RRQ || tftp_state == STATE_OACK ||
 		    tftp_state == STATE_RECV_WRQ) {
@@ -841,9 +849,6 @@ void tftp_start(enum proto_t protocol)
 		printf("Load address: 0x%lx\n", tftp_load_addr);
 		puts("Loading: *\b");
 		tftp_state = STATE_SEND_RRQ;
-#ifdef CONFIG_CMD_BOOTEFI
-		efi_set_bootdev("Net", "", tftp_filename);
-#endif
 	}
 
 	time_start = get_timer(0);

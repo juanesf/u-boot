@@ -885,7 +885,7 @@ cmd_static_rela = \
 	tools/relocate-rela $(3) $(4) $$start $$end
 else
 quiet_cmd_static_rela =
-cmd_static_rela = true
+cmd_static_rela =
 endif
 
 # Always append INPUTS so that arch config.mk's can add custom ones
@@ -1312,7 +1312,11 @@ endif
 shell_cmd = { $(call echo-cmd,$(1)) $(cmd_$(1)); }
 
 quiet_cmd_objcopy_uboot = OBJCOPY $@
+ifdef cmd_static_rela
 cmd_objcopy_uboot = $(cmd_objcopy) && $(call shell_cmd,static_rela,$<,$@,$(CONFIG_SYS_TEXT_BASE)) || { rm -f $@; false; }
+else
+cmd_objcopy_uboot = $(cmd_objcopy)
+endif
 
 u-boot-nodtb.bin: u-boot FORCE
 	$(call if_changed,objcopy_uboot)
@@ -1583,7 +1587,10 @@ u-boot.spr: spl/u-boot-spl.img u-boot.img FORCE
 
 ifneq ($(CONFIG_ARCH_SOCFPGA),)
 quiet_cmd_gensplx4 = GENSPLX4 $@
-cmd_gensplx4 = cat	spl/u-boot-spl.sfp spl/u-boot-spl.sfp	\
+cmd_gensplx4 = $(OBJCOPY) -I binary -O binary --gap-fill=0x0		\
+			--pad-to=$(CONFIG_SPL_PAD_TO)			\
+			spl/u-boot-spl.sfp spl/u-boot-spl.sfp &&        \
+		cat	spl/u-boot-spl.sfp spl/u-boot-spl.sfp		\
 			spl/u-boot-spl.sfp spl/u-boot-spl.sfp > $@ || { rm -f $@; false; }
 spl/u-boot-splx4.sfp: spl/u-boot-spl.sfp FORCE
 	$(call if_changed,gensplx4)

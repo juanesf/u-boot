@@ -104,18 +104,6 @@ DECLARE_GLOBAL_DATA_PTR;
 /* Hyperion only have one slot 0 */
 #define XENON_MMC_SLOT_ID_HYPERION		0
 
-#define MMC_TIMING_LEGACY	0
-#define MMC_TIMING_MMC_HS	1
-#define MMC_TIMING_SD_HS	2
-#define MMC_TIMING_UHS_SDR12	3
-#define MMC_TIMING_UHS_SDR25	4
-#define MMC_TIMING_UHS_SDR50	5
-#define MMC_TIMING_UHS_SDR104	6
-#define MMC_TIMING_UHS_DDR50	7
-#define MMC_TIMING_MMC_DDR52	8
-#define MMC_TIMING_MMC_HS200	9
-#define MMC_TIMING_MMC_HS400	10
-
 #define XENON_MMC_MAX_CLK	400000000
 #define XENON_MMC_3V3_UV	3300000
 #define XENON_MMC_1V8_UV	1800000
@@ -350,6 +338,16 @@ static void xenon_mmc_enable_slot(struct sdhci_host *host, u8 slot)
 	sdhci_writel(host, var, SDHC_SYS_OP_CTRL);
 }
 
+/* Disable specific slot */
+static void xenon_mmc_disable_slot(struct sdhci_host *host, u8 slot)
+{
+	u32 var;
+
+	var = sdhci_readl(host, SDHC_SYS_OP_CTRL);
+	var &= ~(SLOT_MASK(slot) << SLOT_ENABLE_SHIFT);
+	sdhci_writel(host, var, SDHC_SYS_OP_CTRL);
+}
+
 /* Enable Parallel Transfer Mode */
 static void xenon_mmc_enable_parallel_tran(struct sdhci_host *host, u8 slot)
 {
@@ -515,6 +513,14 @@ static int xenon_sdhci_probe(struct udevice *dev)
 	return ret;
 }
 
+static int xenon_sdhci_remove(struct udevice *dev)
+{
+	struct sdhci_host *host = dev_get_priv(dev);
+
+	xenon_mmc_disable_slot(host, XENON_MMC_SLOT_ID_HYPERION);
+	return 0;
+}
+
 static int xenon_sdhci_of_to_plat(struct udevice *dev)
 {
 	struct sdhci_host *host = dev_get_priv(dev);
@@ -564,6 +570,7 @@ U_BOOT_DRIVER(xenon_sdhci_drv) = {
 	.ops		= &sdhci_ops,
 	.bind		= xenon_sdhci_bind,
 	.probe		= xenon_sdhci_probe,
+	.remove		= xenon_sdhci_remove,
 	.priv_auto	= sizeof(struct xenon_sdhci_priv),
 	.plat_auto	= sizeof(struct xenon_sdhci_plat),
 };

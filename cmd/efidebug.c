@@ -8,6 +8,7 @@
 #include <charset.h>
 #include <common.h>
 #include <command.h>
+#include <efi_dt_fixup.h>
 #include <efi_loader.h>
 #include <efi_rng.h>
 #include <exports.h>
@@ -188,14 +189,16 @@ static int do_efi_capsule_res(struct cmd_tbl *cmdtp, int flag,
 	ret = EFI_CALL(RT->get_variable(var_name16, &guid, NULL, &size, NULL));
 	if (ret == EFI_BUFFER_TOO_SMALL) {
 		result = malloc(size);
+		if (!result)
+			return CMD_RET_FAILURE;
 		ret = EFI_CALL(RT->get_variable(var_name16, &guid, NULL, &size,
 						result));
-		if (ret != EFI_SUCCESS) {
-			free(result);
-			printf("Failed to get %ls\n", var_name16);
+	}
+	if (ret != EFI_SUCCESS) {
+		free(result);
+		printf("Failed to get %ls\n", var_name16);
 
-			return CMD_RET_FAILURE;
-		}
+		return CMD_RET_FAILURE;
 	}
 
 	printf("Result total size: 0x%x\n", result->variable_total_size);
@@ -494,6 +497,10 @@ static const struct {
 	{
 		"PXE Base Code",
 		EFI_PXE_BASE_CODE_PROTOCOL_GUID,
+	},
+	{
+		"Device-Tree Fixup",
+		EFI_DT_FIXUP_PROTOCOL_GUID,
 	},
 	/* Configuration table GUIDs */
 	{
@@ -1362,8 +1369,8 @@ static int do_efi_boot_opt(struct cmd_tbl *cmdtp, int flag,
  *
  *     efidebug test bootmgr
  */
-static int do_efi_test_bootmgr(struct cmd_tbl *cmdtp, int flag,
-			       int argc, char * const argv[])
+static __maybe_unused int do_efi_test_bootmgr(struct cmd_tbl *cmdtp, int flag,
+					      int argc, char * const argv[])
 {
 	efi_handle_t image;
 	efi_uintn_t exit_data_size = 0;
@@ -1387,8 +1394,10 @@ static int do_efi_test_bootmgr(struct cmd_tbl *cmdtp, int flag,
 }
 
 static struct cmd_tbl cmd_efidebug_test_sub[] = {
+#ifdef CONFIG_CMD_BOOTEFI_BOOTMGR
 	U_BOOT_CMD_MKENT(bootmgr, CONFIG_SYS_MAXARGS, 1, do_efi_test_bootmgr,
 			 "", ""),
+#endif
 };
 
 /**
@@ -1576,8 +1585,10 @@ static char efidebug_help_text[] =
 	"  - show UEFI memory map\n"
 	"efidebug tables\n"
 	"  - show UEFI configuration tables\n"
+#ifdef CONFIG_CMD_BOOTEFI_BOOTMGR
 	"efidebug test bootmgr\n"
 	"  - run simple bootmgr for test\n"
+#endif
 	"efidebug query [-nv][-bs][-rt][-at]\n"
 	"  - show size of UEFI variables store\n";
 #endif

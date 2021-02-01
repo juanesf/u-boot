@@ -120,6 +120,7 @@ endif
 obj-$(CONFIG_CMD_PINMUX) += pinmux.o
 obj-$(CONFIG_CMD_PMC) += pmc.o
 obj-$(CONFIG_CMD_PSTORE) += pstore.o
+obj-$(CONFIG_CMD_PWM) += pwm.o
 obj-$(CONFIG_CMD_PXE) += pxe.o pxe_utils.o
 obj-$(CONFIG_CMD_WOL) += wol.o
 obj-$(CONFIG_CMD_QFW) += qfw.o
@@ -178,6 +179,7 @@ obj-$(CONFIG_CMD_ZFS) += zfs.o
 
 obj-$(CONFIG_CMD_DFU) += dfu.o
 obj-$(CONFIG_CMD_GPT) += gpt.o
+obj-$(CONFIG_CMD_MBR) += mbr.o
 obj-$(CONFIG_CMD_ETHSW) += ethsw.o
 obj-$(CONFIG_CMD_AXI) += axi.o
 obj-$(CONFIG_CMD_PVBLOCK) += pvblock.o
