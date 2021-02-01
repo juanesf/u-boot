@@ -58,6 +58,15 @@
 	};
 };
 
+&codec {
+	allwinner,audio-routing =
+		"Headphone", "HP",
+		"Headphone", "HPCOM",
+		"MIC1", "Mic",
+		"Mic",  "HBIAS";
+	status = "okay";
+};
+
 &csi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&csi1_8bit_pins>;
