@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0+
 
 VERSION = 2021
-PATCHLEVEL = 01
+PATCHLEVEL = 04
 SUBLEVEL =
-EXTRAVERSION = -rc4
+EXTRAVERSION = -rc1
 NAME =
 
 # *DOCUMENTATION*
@@ -885,7 +885,7 @@ cmd_static_rela = \
 	tools/relocate-rela $(3) $(4) $$start $$end
 else
 quiet_cmd_static_rela =
-cmd_static_rela = true
+cmd_static_rela =
 endif
 
 # Always append INPUTS so that arch config.mk's can add custom ones
@@ -1005,7 +1005,7 @@ cmd_cat = cat $(filter-out $(PHONY), $^) > $@
 append = cat $(filter-out $< $(PHONY), $^) >> $@
 
 quiet_cmd_pad_cat = CAT     $@
-cmd_pad_cat = $(cmd_objcopy) && $(append) || rm -f $@
+cmd_pad_cat = $(cmd_objcopy) && $(append) || { rm -f $@; false; }
 
 quiet_cmd_lzma = LZMA    $@
 cmd_lzma = lzma -c -z -k -9 $< > $@
@@ -1312,7 +1312,11 @@ endif
 shell_cmd = { $(call echo-cmd,$(1)) $(cmd_$(1)); }
 
 quiet_cmd_objcopy_uboot = OBJCOPY $@
-cmd_objcopy_uboot = $(cmd_objcopy) && $(call shell_cmd,static_rela,$<,$@,$(CONFIG_SYS_TEXT_BASE)) || rm -f $@
+ifdef cmd_static_rela
+cmd_objcopy_uboot = $(cmd_objcopy) && $(call shell_cmd,static_rela,$<,$@,$(CONFIG_SYS_TEXT_BASE)) || { rm -f $@; false; }
+else
+cmd_objcopy_uboot = $(cmd_objcopy)
+endif
 
 u-boot-nodtb.bin: u-boot FORCE
 	$(call if_changed,objcopy_uboot)
@@ -1583,13 +1587,16 @@ u-boot.spr: spl/u-boot-spl.img u-boot.img FORCE
 
 ifneq ($(CONFIG_ARCH_SOCFPGA),)
 quiet_cmd_gensplx4 = GENSPLX4 $@
-cmd_gensplx4 = cat	spl/u-boot-spl.sfp spl/u-boot-spl.sfp	\
-			spl/u-boot-spl.sfp spl/u-boot-spl.sfp > $@ || rm -f $@
+cmd_gensplx4 = $(OBJCOPY) -I binary -O binary --gap-fill=0x0		\
+			--pad-to=$(CONFIG_SPL_PAD_TO)			\
+			spl/u-boot-spl.sfp spl/u-boot-spl.sfp &&        \
+		cat	spl/u-boot-spl.sfp spl/u-boot-spl.sfp		\
+			spl/u-boot-spl.sfp spl/u-boot-spl.sfp > $@ || { rm -f $@; false; }
 spl/u-boot-splx4.sfp: spl/u-boot-spl.sfp FORCE
 	$(call if_changed,gensplx4)
 
 quiet_cmd_socboot = SOCBOOT $@
-cmd_socboot = cat	spl/u-boot-splx4.sfp u-boot.img > $@ || rm -f $@
+cmd_socboot = cat	spl/u-boot-splx4.sfp u-boot.img > $@ || { rm -f $@; false; }
 u-boot-with-spl.sfp: spl/u-boot-splx4.sfp u-boot.img FORCE
 	$(call if_changed,socboot)
 
@@ -1599,12 +1606,12 @@ cmd_gensplpadx4 =  dd if=/dev/zero of=spl/u-boot-spl.pad bs=64 count=1024 ; \
 			spl/u-boot-spl.sfp spl/u-boot-spl.pad \
 			spl/u-boot-spl.sfp spl/u-boot-spl.pad \
 			spl/u-boot-spl.sfp spl/u-boot-spl.pad > $@ || \
-			rm -f $@ spl/u-boot-spl.pad
+			{ rm -f $@ spl/u-boot-spl.pad; false; }
 u-boot-spl-padx4.sfp: spl/u-boot-spl.sfp FORCE
 	$(call if_changed,gensplpadx4)
 
 quiet_cmd_socnandboot = SOCNANDBOOT $@
-cmd_socnandboot = cat	u-boot-spl-padx4.sfp u-boot.img > $@ || rm -f $@
+cmd_socnandboot = cat	u-boot-spl-padx4.sfp u-boot.img > $@ || { rm -f $@; false; }
 u-boot-with-nand-spl.sfp: u-boot-spl-padx4.sfp u-boot.img FORCE
 	$(call if_changed,socnandboot)
 

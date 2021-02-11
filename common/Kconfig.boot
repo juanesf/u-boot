@@ -140,6 +140,12 @@ config FIT_IMAGE_POST_PROCESS
 	  injected into the FIT creation (i.e. the blobs would have been pre-
 	  processed before being added to the FIT image).
 
+config FIT_PRINT
+        bool "Support FIT printing"
+        default y
+        help
+          Support printing the content of the fitImage in a verbose manner.
+
 if SPL
 
 config SPL_FIT
@@ -819,7 +825,10 @@ config AUTOBOOT_STOP_STR_SHA256
 	  This option adds the feature to only stop the autobooting,
 	  and therefore boot into the U-Boot prompt, when the input
 	  string / password matches a values that is encypted via
-	  a SHA256 hash and saved in the environment.
+	  a SHA256 hash and saved in the environment variable
+	  "bootstopkeysha256". If the value in that variable
+	  includes a ":", the portion prior to the ":" will be treated
+	  as a salt value.
 
 config AUTOBOOT_USE_MENUKEY
 	bool "Allow a specify key to run a menu from the environment"
@@ -864,6 +873,23 @@ config BOOTARGS
 	  This can be used to pass arguments to the bootm command. The value of
 	  CONFIG_BOOTARGS goes into the environment value "bootargs". Note that
 	  this value will also override the "chosen" node in FDT blob.
+
+config BOOTARGS_SUBST
+	bool "Support substituting strings in boot arguments"
+	help
+	  This allows substituting string values in the boot arguments. These
+	  are applied after the commandline has been built.
+
+	  One use for this is to insert the root-disk UUID into the command
+	  line where bootargs contains "root=${uuid}"
+
+		setenv bootargs "console= root=${uuid}"
+		# Set the 'uuid' environment variable
+		part uuid mmc 2:2 uuid
+
+		# Command-line substitution will put the real uuid into the
+		# kernel command line
+		bootm
 
 config USE_BOOTCOMMAND
 	bool "Enable a default value for bootcmd"

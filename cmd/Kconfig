@@ -55,6 +55,15 @@ config SYS_PROMPT
 	  This string is displayed in the command line to the left of the
 	  cursor.
 
+config SYS_PROMPT_HUSH_PS2
+	string "Hush shell secondary prompt"
+	depends on HUSH_PARSER
+	default "> "
+	help
+	  This defines the secondary prompt string, which is
+	  printed when the command interpreter needs more input
+	  to complete a command. Usually "> ".
+
 config SYS_XTRACE
 	string "Command execution tracer"
 	depends on CMDLINE
@@ -75,7 +84,8 @@ menu "Info commands"
 
 config CMD_ACPI
 	bool "acpi"
-	default y if ACPIGEN
+	depends on ACPIGEN
+	default y
 	help
 	  List and dump ACPI tables. ACPI (Advanced Configuration and Power
 	  Interface) is used mostly on x86 for providing information to the
@@ -113,6 +123,7 @@ config CMD_CONSOLE
 
 config CMD_CPU
 	bool "cpu"
+	depends on CPU
 	help
 	  Print information about available CPUs. This normally shows the
 	  number of CPUs, type (e.g. manufacturer, architecture, product or
@@ -918,6 +929,12 @@ config CMD_GPIO
 	help
 	  GPIO support.
 
+config CMD_PWM
+	bool "pwm"
+	depends on DM_PWM
+	help
+	  Control PWM channels, this allows invert/config/enable/disable PWM channels.
+
 config CMD_GPT
 	bool "GPT (GUID Partition Table) command"
 	select EFI_PARTITION
@@ -1024,6 +1041,14 @@ config CMD_LSBLK
 	help
 	  Print list of available block device drivers, and for each, the list
 	  of known block devices.
+
+config CMD_MBR
+	bool "MBR (Master Boot Record) command"
+	select DOS_PARTITION
+	select HAVE_BLOCK_DEVICE
+	help
+	  Enable the 'mbr' command to ready and write MBR (Master Boot Record)
+	  style partition tables.
 
 config CMD_MISC
 	bool "misc"
@@ -1682,7 +1707,7 @@ config CMD_EFIDEBUG
 
 config CMD_EXCEPTION
 	bool "exception - raise exception"
-	depends on ARM || RISCV || X86
+	depends on ARM || RISCV || SANDBOX || X86
 	help
 	  Enable the 'exception' command which allows to raise an exception.
 
@@ -1908,7 +1933,7 @@ config CMD_REGULATOR
 
 	  The '-f' (force) option can be used for set the value which exceeds
 	  the limits, which are found in device-tree and are kept in regulator's
-	  uclass platdata structure.
+	  uclass plat structure.
 
 endmenu
 

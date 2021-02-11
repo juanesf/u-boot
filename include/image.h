@@ -308,6 +308,7 @@ enum {
 	IH_TYPE_IMX8MIMAGE,		/* Freescale IMX8MBoot Image	*/
 	IH_TYPE_IMX8IMAGE,		/* Freescale IMX8Boot Image	*/
 	IH_TYPE_COPRO,			/* Coprocessor Image for remoteproc*/
+	IH_TYPE_SUNXI_EGON,		/* Allwinner eGON Boot Image */
 
 	IH_TYPE_COUNT,			/* Number of image types */
 };
@@ -1552,6 +1553,10 @@ int board_fit_config_name_match(const char *name);
  * @return no return value (failure should be handled internally)
  */
 void board_fit_image_post_process(void **p_image, size_t *p_size);
+#else
+static inline void board_fit_image_post_process(void **p_image, size_t *p_size)
+{
+}
 #endif /* CONFIG_SPL_FIT_IMAGE_POST_PROCESS */
 
 #define FDT_ERROR	((ulong)(-1))

@@ -324,6 +324,8 @@ static int tmio_sd_dma_xfer(struct udevice *dev, struct mmc_data *data)
 
 	tmp = tmio_sd_readl(priv, TMIO_SD_DMA_MODE);
 
+	tmp |= priv->idma_bus_width;
+
 	if (data->flags & MMC_DATA_READ) {
 		buf = data->dest;
 		dir = DMA_FROM_DEVICE;
@@ -702,20 +704,21 @@ static void tmio_sd_host_init(struct tmio_sd_priv *priv)
 	if (priv->caps & TMIO_SD_CAP_DMA_INTERNAL) {
 		tmp = tmio_sd_readl(priv, TMIO_SD_DMA_MODE);
 		tmp |= TMIO_SD_DMA_MODE_ADDR_INC;
+		tmp |= priv->idma_bus_width;
 		tmio_sd_writel(priv, tmp, TMIO_SD_DMA_MODE);
 	}
 }
 
 int tmio_sd_bind(struct udevice *dev)
 {
-	struct tmio_sd_plat *plat = dev_get_platdata(dev);
+	struct tmio_sd_plat *plat = dev_get_plat(dev);
 
 	return mmc_bind(dev, &plat->mmc, &plat->cfg);
 }
 
 int tmio_sd_probe(struct udevice *dev, u32 quirks)
 {
-	struct tmio_sd_plat *plat = dev_get_platdata(dev);
+	struct tmio_sd_plat *plat = dev_get_plat(dev);
 	struct tmio_sd_priv *priv = dev_get_priv(dev);
 	struct mmc_uclass_priv *upriv = dev_get_uclass_priv(dev);
 	fdt_addr_t base;

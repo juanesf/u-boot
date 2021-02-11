@@ -500,6 +500,17 @@ int fdtdec_get_alias_seq(const void *blob, const char *base, int offset,
 		slash = strrchr(prop, '/');
 		if (strcmp(slash + 1, find_name))
 			continue;
+
+		/*
+		 * Adding an extra check to distinguish DT nodes with
+		 * same name
+		 */
+		if (IS_ENABLED(CONFIG_PHANDLE_CHECK_SEQ)) {
+			if (fdt_get_phandle(blob, offset) !=
+			    fdt_get_phandle(blob, fdt_path_offset(blob, prop)))
+				continue;
+		}
+
 		val = trailing_strtol(name);
 		if (val != -1) {
 			*seqp = val;
@@ -589,7 +600,8 @@ int fdtdec_prepare_fdt(void)
 #ifdef CONFIG_SPL_BUILD
 		puts("Missing DTB\n");
 #else
-		puts("No valid device tree binary found - please append one to U-Boot binary, use u-boot-dtb.bin or define CONFIG_OF_EMBED. For sandbox, use -d <file.dtb>\n");
+		printf("No valid device tree binary found at %p\n",
+		       gd->fdt_blob);
 # ifdef DEBUG
 		if (gd->fdt_blob) {
 			printf("fdt_blob=%p\n", gd->fdt_blob);
@@ -1241,7 +1253,7 @@ __weak void *board_fdt_blob_setup(void)
 	void *fdt_blob = NULL;
 #ifdef CONFIG_SPL_BUILD
 	/* FDT is at end of BSS unless it is in a different memory region */
-	if (IS_ENABLED(CONFIG_SPL_SEPARATE_BSS))
+	if (CONFIG_IS_ENABLED(SEPARATE_BSS))
 		fdt_blob = (ulong *)&_image_binary_end;
 	else
 		fdt_blob = (ulong *)&__bss_end;

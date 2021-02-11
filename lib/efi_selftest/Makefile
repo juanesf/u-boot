@@ -14,6 +14,8 @@ CFLAGS_efi_selftest_miniapp_exit.o := $(CFLAGS_EFI) -Os -ffreestanding
 CFLAGS_REMOVE_efi_selftest_miniapp_exit.o := $(CFLAGS_NON_EFI)
 CFLAGS_efi_selftest_miniapp_return.o := $(CFLAGS_EFI) -Os -ffreestanding
 CFLAGS_REMOVE_efi_selftest_miniapp_return.o := $(CFLAGS_NON_EFI)
+CFLAGS_initrddump_exit.o := $(CFLAGS_EFI) -Os -ffreestanding
+CFLAGS_REMOVE_initrddump.o := $(CFLAGS_NON_EFI)
 
 obj-y += \
 efi_selftest.o \
@@ -25,9 +27,12 @@ efi_selftest_crc32.o \
 efi_selftest_devicepath_util.o \
 efi_selftest_events.o \
 efi_selftest_event_groups.o \
+efi_selftest_exception.o \
 efi_selftest_exitbootservices.o \
 efi_selftest_gop.o \
+efi_selftest_load_file.o \
 efi_selftest_loaded_image.o \
+efi_selftest_loadimage.o \
 efi_selftest_manageprotocols.o \
 efi_selftest_mem.o \
 efi_selftest_memory.o \
@@ -35,6 +40,8 @@ efi_selftest_open_protocol.o \
 efi_selftest_register_notify.o \
 efi_selftest_reset.o \
 efi_selftest_set_virtual_address_map.o \
+efi_selftest_startimage_exit.o \
+efi_selftest_startimage_return.o \
 efi_selftest_textinput.o \
 efi_selftest_textinputex.o \
 efi_selftest_textoutput.o \
@@ -65,12 +72,6 @@ ifeq ($(CONFIG_BLK)$(CONFIG_DOS_PARTITION),yy)
 obj-y += efi_selftest_block_device.o
 endif
 
-obj-y += \
-efi_selftest_exception.o \
-efi_selftest_loadimage.o \
-efi_selftest_startimage_exit.o \
-efi_selftest_startimage_return.o
-
 targets += \
 efi_miniapp_file_image_exception.h \
 efi_miniapp_file_image_exit.h \
@@ -79,8 +80,13 @@ efi_selftest_miniapp_exception.efi \
 efi_selftest_miniapp_exit.efi \
 efi_selftest_miniapp_return.efi
 
-always += \
-dtbdump.efi
+ifeq ($(CONFIG_GENERATE_ACPI_TABLE),)
+always += dtbdump.efi
+endif
+
+ifdef CONFIG_EFI_LOAD_FILE2_INITRD
+always += initrddump.efi
+endif
 
 $(obj)/efi_miniapp_file_image_exception.h: $(obj)/efi_selftest_miniapp_exception.efi
 	$(obj)/../../tools/file2include $(obj)/efi_selftest_miniapp_exception.efi > \
@@ -94,9 +100,11 @@ $(obj)/efi_miniapp_file_image_return.h: $(obj)/efi_selftest_miniapp_return.efi
 	$(obj)/../../tools/file2include $(obj)/efi_selftest_miniapp_return.efi > \
 	$(obj)/efi_miniapp_file_image_return.h
 
-$(obj)/efi_selftest_loadimage.o: $(obj)/efi_miniapp_file_image_exit.h
-
 $(obj)/efi_selftest_exception.o: $(obj)/efi_miniapp_file_image_exception.h
+
+$(obj)/efi_selftest_load_file.o: $(obj)/efi_miniapp_file_image_exit.h
+
+$(obj)/efi_selftest_loadimage.o: $(obj)/efi_miniapp_file_image_exit.h
 
 $(obj)/efi_selftest_startimage_exit.o: $(obj)/efi_miniapp_file_image_exit.h
 
