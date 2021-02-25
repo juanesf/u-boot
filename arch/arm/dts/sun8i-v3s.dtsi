@@ -157,7 +157,7 @@
 		syscon: system-control@1c00000 {
 			compatible = "allwinner,sun8i-v3s-system-control",
 				     "allwinner,sun8i-h3-system-control";
-			reg = <0x01c00000 0x1000>;
+			reg = <0x01c00000 0xd0>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
