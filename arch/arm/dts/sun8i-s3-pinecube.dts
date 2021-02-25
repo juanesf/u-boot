@@ -61,6 +61,7 @@
 	allwinner,audio-routing =
 		"Headphone", "HP",
 		"Headphone", "HPCOM",
+		"Speaker", "LINEOUT",
 		"MIC1", "Mic",
 		"Mic",  "HBIAS";
 	status = "okay";
