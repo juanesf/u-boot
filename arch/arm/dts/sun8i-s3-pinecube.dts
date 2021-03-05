@@ -61,9 +61,14 @@
 	allwinner,audio-routing =
 		"Headphone", "HP",
 		"Headphone", "HPCOM",
-		"Speaker", "LINEOUT",
+		"Speaker", "HP",
+		/* "Line Out", "LINEOUT", */
+		/* "Speaker", "LINEOUT", */
 		"MIC1", "Mic",
 		"Mic",  "HBIAS";
+		/* "Mic",  "MBIAS"; */
+	allwinner,pa-gpios = <&pio 1 5 GPIO_ACTIVE_HIGH>; /* PB5 */
+	/* allwinner,pa-gpios = <&pio 6 6 GPIO_ACTIVE_HIGH>;  PG6 */
 	status = "okay";
 };
 
@@ -94,9 +99,15 @@
 	status = "okay";
 
 	axp209: pmic@34 {
+		compatible = "x-powers,axp203",
+			     "x-powers,axp209";
 		reg = <0x34>;
-		interrupt-parent = <&nmi_intc>;
-		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
+		/* interrupt-parent = <&r_intc>; */
+		/* interrupts = <0 IRQ_TYPE_LEVEL_LOW>; */
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
 	};
 };
 
