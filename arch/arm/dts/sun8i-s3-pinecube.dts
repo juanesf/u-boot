@@ -100,8 +100,9 @@
 };
 
 &emac {
-	/delete-property/ phy-handle;
-	/delete-property/ phy-mode;
+	phy-handle = <&int_mii_phy>;
+	phy-mode = "mii";
+	status = "okay";
 };
 
 &i2c0 {
