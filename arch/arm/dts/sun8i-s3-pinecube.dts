@@ -57,6 +57,10 @@
 		post-power-on-delay-ms = <200>;
 	};
 
+&battery_power_supply {
+	status = "okay";
+};
+
 &codec {
 	allwinner,audio-routing =
 		"Headphone", "HP",
@@ -89,10 +93,15 @@
 	};
 };
 
-&emac {
-	phy-handle = <&int_mii_phy>;
-	phy-mode = "mii";
+&ehci0 {
+	phys = <&usbphy 0>;
+	phy-names = "usb";
 	status = "okay";
+};
+
+&emac {
+	/delete-property/ phy-handle;
+	/delete-property/ phy-mode;
 };
 
 &i2c0 {
@@ -143,6 +152,10 @@
 	};
 };
 
+&i2s0 {
+	status = "okay";
+};
+
 &lradc {
 	vref-supply = <&reg_ldo2>;
 	status = "okay";
@@ -152,6 +165,14 @@
 		linux,code = <KEY_SETUP>;
 		channel = <0>;
 		voltage = <190000>;
+	};
+};
+
+&mdio_mux {
+	external_mdio: mdio@2 {
+		reg = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 	};
 };
 
@@ -168,6 +189,12 @@
 	mmc-pwrseq = <&wifi_pwrseq>;
 	bus-width = <4>;
 	non-removable;
+	status = "okay";
+};
+
+&ohci0 {
+	phys = <&usbphy 0>;
+	phy-names = "usb";
 	status = "okay";
 };
 
@@ -227,18 +254,13 @@
 	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "winbond,w25q128", "jedec,spi-nor";
+		compatible = "xtx,xt25f128b", "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <40000000>;
 	};
 };
 
 &uart2 {
-	status = "okay";
-};
-
-&usb_otg {
-	dr_mode = "host";
 	status = "okay";
 };
 
