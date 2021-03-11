@@ -58,6 +58,10 @@
 	};
 };
 
+&battery_power_supply {
+	status = "okay";
+};
+
 &codec {
 	allwinner,audio-routing =
 		"Speaker", "LINEOUT",
