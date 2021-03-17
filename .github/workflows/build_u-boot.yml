@@ -44,13 +44,13 @@ jobs:
     - name: Upload binary u-boot
       uses: actions/upload-artifact@v2
       with:
-        name: u-boot_binary
+        name: u-boot-sunxi-with-spl.bin
         path: /home/runner/work/u-boot/u-boot/u-boot-sunxi-with-spl.bin
 
     - name: Upload dtb u-boot
       uses: actions/upload-artifact@v2
       with:
-        name: u-boot_dtb
+        name: sun8i-s3-pinecube.dtb
         path: /home/runner/work/u-boot/u-boot/arch/arm/dts/sun8i-s3-pinecube.dtb
 
     - name: Delete workflow runs
