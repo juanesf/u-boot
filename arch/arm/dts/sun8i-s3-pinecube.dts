@@ -25,12 +25,12 @@
 
 		led1 {
 			label = "pine64:ir:led1";
-			gpios = <&pio 1 10 GPIO_ACTIVE_LOW>; /* PB10 */
+			gpios = <&pio 1 10 GPIO_ACTIVE_HIGH>; /* PB10 */
 		};
 
 		led2 {
 			label = "pine64:ir:led2";
-			gpios = <&pio 1 12 GPIO_ACTIVE_LOW>; /* PB12 */
+			gpios = <&pio 1 12 GPIO_ACTIVE_HIGH>; /* PB12 */
 		};
 	};
 
@@ -58,16 +58,12 @@
 	};
 };
 
-&battery_power_supply {
-	status = "okay";
-};
-
 &codec {
 	allwinner,audio-routing =
 		"Speaker", "LINEOUT",
 		"MIC1", "Mic",
-		"Mic",  "MBIAS";
-	allwinner,pa-gpio = <&pio 6 6 GPIO_ACTIVE_HIGH>; /*PG6*/
+		"Mic",  "HBIAS";
+	allwinner,pa-gpios = <&pio 6 6 GPIO_ACTIVE_HIGH>; /* PG6 */
 	status = "okay";
 };
 
@@ -107,9 +103,9 @@
 		compatible = "x-powers,axp203",
 			     "x-powers,axp209";
 		reg = <0x34>;
+		/* interrupt-parent = <&r_intc>; */
+		/* interrupts = <0 IRQ_TYPE_LEVEL_LOW>; */
 		interrupt-parent = <&gic>;
-		/*interrupt-parent = <&r_intc>;*/
-		/*interrupts = <0 IRQ_TYPE_LEVEL_LOW>;*/
 		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-controller;
 		#interrupt-cells = <1>;
@@ -198,6 +194,10 @@
 #include "axp209.dtsi"
 
 &ac_power_supply {
+	status = "okay";
+};
+
+&battery_power_supply {
 	status = "okay";
 };
 
