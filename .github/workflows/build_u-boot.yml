@@ -1,0 +1,39 @@
+name: buid u-boot
+
+on:
+  push:
+    branches: [ audio-codec ]
+  pull_request:
+    branches: [ audio-codec ]
+
+env:
+  REPO_URL: https://github.com/juanesf/u-boot
+  REPO_BRANCH: audio-codec
+  TZ: America/Santiago
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E apt-get update && sudo apt-get install -y bison flex python3-dev swig flex git
+        sudo -E apt-get install -y gcc-arm-linux-gnueabihf make
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        git clone $REPO_URL -b $REPO_BRANCH ~/u-boot
+
+    - name: change folder
+      run: cd ~/u-boot
+    - name: configure pinecube defconfig
+      run: make CROSS_COMPILE=arm-linux-gnueabihf- pinecube_defconfig
+    - name: make
+      run: make CROSS_COMPILE=arm-linux-gnueabihf-
