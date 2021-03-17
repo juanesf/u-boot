@@ -35,8 +35,8 @@ jobs:
     - name: change folder
       run: cd ~/u-boot
 
-    - name: configure pinecube defconfig
-      run: make CROSS_COMPILE=arm-linux-gnueabihf- pinecube_defconfig
+    - name: configure bpi_m2ultra defconfig
+      run: make CROSS_COMPILE=arm-linux-gnueabihf- Bananapi_M2_Ultra_defconfig
 
     - name: make u-boot
       run: make CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
