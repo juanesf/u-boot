@@ -24,6 +24,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        sudo -E rm -Rf ~/u-boot
         sudo -E apt-get update && sudo apt-get install -y bison flex python3-dev swig flex git
         sudo -E apt-get install -y gcc-arm-linux-gnueabihf make
         sudo -E apt-get -qq autoremove --purge
