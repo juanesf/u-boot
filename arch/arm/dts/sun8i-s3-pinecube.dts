@@ -144,10 +144,6 @@
 	};
 };
 
-&i2s0 {
-	status = "okay";
-};
-
 &lradc {
 	vref-supply = <&reg_ldo2>;
 	status = "okay";
