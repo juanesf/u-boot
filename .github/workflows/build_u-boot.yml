@@ -33,7 +33,29 @@ jobs:
 
     - name: change folder
       run: cd ~/u-boot
+
     - name: configure pinecube defconfig
       run: make CROSS_COMPILE=arm-linux-gnueabihf- pinecube_defconfig
-    - name: make
+
+    - name: make u-boot
       run: make CROSS_COMPILE=arm-linux-gnueabihf-
+
+    - name: Upload binary u-boot
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success'
+      with:
+        name: u-boot binary
+        path: ~/u-boot/u-boot-sunxi-with-spl.bin
+
+    - name: Upload dtb u-boot
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success'
+      with:
+        name: u-boot dtb
+        path: ~/u-boot/arch/arm/dts/sun8i-s3-pinecube.dtb
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
