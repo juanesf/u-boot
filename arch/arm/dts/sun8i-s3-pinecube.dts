@@ -25,12 +25,12 @@
 
 		led1 {
 			label = "pine64:ir:led1";
-			gpios = <&pio 1 10 GPIO_ACTIVE_LOW>; /* PB10 */
+			gpios = <&pio 1 10 GPIO_ACTIVE_HIGH>; /* PB10 */
 		};
 
 		led2 {
 			label = "pine64:ir:led2";
-			gpios = <&pio 1 12 GPIO_ACTIVE_LOW>; /* PB12 */
+			gpios = <&pio 1 12 GPIO_ACTIVE_HIGH>; /* PB12 */
 		};
 	};
 
@@ -56,23 +56,14 @@
 		reset-gpios = <&pio 1 3 GPIO_ACTIVE_LOW>; /* PB3 WIFI-RST */
 		post-power-on-delay-ms = <200>;
 	};
-
-&battery_power_supply {
-	status = "okay";
 };
 
 &codec {
 	allwinner,audio-routing =
-		"Headphone", "HP",
-		"Headphone", "HPCOM",
-		"Speaker", "HP",
-		/* "Line Out", "LINEOUT", */
-		/* "Speaker", "LINEOUT", */
+		"Speaker", "LINEOUT",
 		"MIC1", "Mic",
 		"Mic",  "HBIAS";
-		/* "Mic",  "MBIAS"; */
-	allwinner,pa-gpios = <&pio 1 5 GPIO_ACTIVE_HIGH>; /* PB5 */
-	/* allwinner,pa-gpios = <&pio 6 6 GPIO_ACTIVE_HIGH>;  PG6 */
+	allwinner,pa-gpios = <&pio 6 6 GPIO_ACTIVE_HIGH>; /* PG6 */
 	status = "okay";
 };
 
@@ -207,6 +198,10 @@
 #include "axp209.dtsi"
 
 &ac_power_supply {
+	status = "okay";
+};
+
+&battery_power_supply {
 	status = "okay";
 };
 
