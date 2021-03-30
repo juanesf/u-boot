@@ -11,6 +11,7 @@
 #include <image.h>
 #include <log.h>
 #include <malloc.h>
+#include <asm/global_data.h>
 #include <linux/bug.h>
 #include <asm/io.h>
 #include <linux/delay.h>
@@ -141,7 +142,7 @@ int parse_mc_firmware_fit_image(u64 mc_fw_addr,
 		return -EINVAL;
 	}
 
-	if (!fit_check_format(fit_hdr)) {
+	if (fit_check_format(fit_hdr, IMAGE_SIZE_INVAL)) {
 		printf("fsl-mc: ERR: Bad firmware image (bad FIT header)\n");
 		return -EINVAL;
 	}

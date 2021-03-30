@@ -29,6 +29,7 @@
 #include <asm/arch/mmc.h>
 #include <asm/arch/prcm.h>
 #include <asm/arch/spl.h>
+#include <asm/global_data.h>
 #include <linux/delay.h>
 #include <u-boot/crc.h>
 #ifndef CONFIG_ARM64
@@ -292,7 +293,7 @@ int board_init(void)
 		}
 	}
 
-#ifdef CONFIG_DM_I2C
+#if CONFIG_IS_ENABLED(DM_I2C)
 	/*
 	 * Temporary workaround for enabling I2C clocks until proper sunxi DM
 	 * clk, reset and pinctrl drivers land.

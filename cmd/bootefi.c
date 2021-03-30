@@ -19,6 +19,7 @@
 #include <image.h>
 #include <log.h>
 #include <malloc.h>
+#include <asm/global_data.h>
 #include <linux/libfdt.h>
 #include <linux/libfdt_env.h>
 #include <mapmem.h>
@@ -72,7 +73,7 @@ void efi_set_bootdev(const char *dev, const char *devnr, const char *path,
 	/* Remember only PE-COFF and FIT images */
 	if (efi_check_pe(buffer, buffer_size, NULL) != EFI_SUCCESS) {
 #ifdef CONFIG_FIT
-		if (!fit_check_format(buffer))
+		if (fit_check_format(buffer, IMAGE_SIZE_INVAL))
 			return;
 		/*
 		 * FIT images of type EFI_OS are started via command bootm.

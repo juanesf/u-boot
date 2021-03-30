@@ -6,6 +6,7 @@
  */
 
 #include <malloc.h>
+#include <asm/global_data.h>
 #include <asm/io.h>
 #include <common.h>
 #include <clk.h>
@@ -49,6 +50,10 @@ static int at91_i2c_xfer_msg(struct at91_i2c_bus *bus, struct i2c_msg *msg)
 	bool is_read = msg->flags & I2C_M_RD;
 	u32 i;
 	int ret = 0;
+
+	/* if there is no message to send/receive, just exit quietly */
+	if (msg->len == 0)
+		return ret;
 
 	readl(&reg->sr);
 	if (is_read) {

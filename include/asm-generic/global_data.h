@@ -147,7 +147,7 @@ struct global_data {
 	/**
 	 * @ram_top: top address of RAM used by U-Boot
 	 */
-	unsigned long ram_top;
+	phys_addr_t ram_top;
 	/**
 	 * @relocaddr: start address of U-Boot in RAM
 	 *
@@ -446,6 +446,12 @@ struct global_data {
 	 * @acpi_ctx: ACPI context pointer
 	 */
 	struct acpi_ctx *acpi_ctx;
+#endif
+#if CONFIG_IS_ENABLED(GENERATE_SMBIOS_TABLE)
+	/**
+	 * @smbios_version: Points to SMBIOS type 0 version
+	 */
+	char *smbios_version;
 #endif
 };
 

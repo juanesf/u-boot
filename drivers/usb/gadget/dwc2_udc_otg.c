@@ -248,9 +248,7 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 
 	debug_cond(DEBUG_SETUP != 0, "%s: %s\n", __func__, "no name");
 
-	if (!driver
-	    || (driver->speed != USB_SPEED_FULL
-		&& driver->speed != USB_SPEED_HIGH)
+	if (!driver || driver->speed < USB_SPEED_FULL
 	    || !driver->bind || !driver->disconnect || !driver->setup)
 		return -EINVAL;
 	if (!dev)
@@ -320,9 +318,7 @@ static int dwc2_gadget_start(struct usb_gadget *g,
 
 	debug_cond(DEBUG_SETUP != 0, "%s: %s\n", __func__, "no name");
 
-	if (!driver ||
-	    (driver->speed != USB_SPEED_FULL &&
-	     driver->speed != USB_SPEED_HIGH) ||
+	if (!driver || driver->speed < USB_SPEED_FULL ||
 	    !driver->bind || !driver->disconnect || !driver->setup)
 		return -EINVAL;
 
@@ -1176,7 +1172,7 @@ static int dwc2_udc_otg_remove(struct udevice *dev)
 static const struct udevice_id dwc2_udc_otg_ids[] = {
 	{ .compatible = "snps,dwc2" },
 	{ .compatible = "brcm,bcm2835-usb" },
-	{ .compatible = "st,stm32mp1-hsotg",
+	{ .compatible = "st,stm32mp15-hsotg",
 	  .data = (ulong)dwc2_set_stm32mp1_hsotg_params },
 	{},
 };

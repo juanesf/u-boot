@@ -9,6 +9,7 @@
 #include <log.h>
 #include <malloc.h>
 #include <spi.h>
+#include <asm/global_data.h>
 #include <dm/device_compat.h>
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -661,7 +662,10 @@ static int mxc_spi_release_bus(struct udevice *dev)
 
 static int mxc_spi_set_speed(struct udevice *bus, uint speed)
 {
-	/* Nothing to do */
+	struct mxc_spi_slave *mxcs = dev_get_plat(bus);
+
+	mxcs->max_hz = speed;
+
 	return 0;
 }
 

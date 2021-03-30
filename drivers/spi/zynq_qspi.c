@@ -13,6 +13,7 @@
 #include <log.h>
 #include <malloc.h>
 #include <spi.h>
+#include <asm/global_data.h>
 #include <asm/io.h>
 #include <linux/bitops.h>
 
@@ -193,7 +194,7 @@ static int zynq_qspi_probe(struct udevice *bus)
 	}
 
 	ret = clk_enable(&clk);
-	if (ret && ret != -ENOSYS) {
+	if (ret) {
 		dev_err(bus, "failed to enable clock\n");
 		return ret;
 	}

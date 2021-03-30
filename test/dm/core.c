@@ -11,6 +11,7 @@
 #include <fdtdec.h>
 #include <log.h>
 #include <malloc.h>
+#include <asm/global_data.h>
 #include <dm/device-internal.h>
 #include <dm/root.h>
 #include <dm/util.h>
@@ -70,6 +71,14 @@ static struct driver_info driver_info_pre_reloc = {
 
 static struct driver_info driver_info_act_dma = {
 	.name = "test_act_dma_drv",
+};
+
+static struct driver_info driver_info_vital_clk = {
+	.name = "test_vital_clk_drv",
+};
+
+static struct driver_info driver_info_act_dma_vital_clk = {
+	.name = "test_act_dma_vital_clk_drv",
 };
 
 void dm_leak_check_start(struct unit_test_state *uts)
@@ -883,6 +892,92 @@ static int dm_test_remove_active_dma(struct unit_test_state *uts)
 }
 DM_TEST(dm_test_remove_active_dma, 0);
 
+/* Test removal of 'vital' devices */
+static int dm_test_remove_vital(struct unit_test_state *uts)
+{
+	struct dm_test_state *dms = uts->priv;
+	struct udevice *normal, *dma, *vital, *dma_vital;
+
+	/* Skip the behaviour in test_post_probe() */
+	dms->skip_post_probe = 1;
+
+	ut_assertok(device_bind_by_name(dms->root, false, &driver_info_manual,
+					&normal));
+	ut_assertnonnull(normal);
+
+	ut_assertok(device_bind_by_name(dms->root, false, &driver_info_act_dma,
+					&dma));
+	ut_assertnonnull(dma);
+
+	ut_assertok(device_bind_by_name(dms->root, false,
+					&driver_info_vital_clk, &vital));
+	ut_assertnonnull(vital);
+
+	ut_assertok(device_bind_by_name(dms->root, false,
+					&driver_info_act_dma_vital_clk,
+					&dma_vital));
+	ut_assertnonnull(dma_vital);
+
+	/* Probe the devices */
+	ut_assertok(device_probe(normal));
+	ut_assertok(device_probe(dma));
+	ut_assertok(device_probe(vital));
+	ut_assertok(device_probe(dma_vital));
+
+	/* Check that devices are active right now */
+	ut_asserteq(true, device_active(normal));
+	ut_asserteq(true, device_active(dma));
+	ut_asserteq(true, device_active(vital));
+	ut_asserteq(true, device_active(dma_vital));
+
+	/* Remove active devices via selective remove flag */
+	dm_remove_devices_flags(DM_REMOVE_NON_VITAL | DM_REMOVE_ACTIVE_ALL);
+
+	/*
+	 * Check that this only has an effect on the dma device, since two
+	 * devices are vital and the third does not have active DMA
+	 */
+	ut_asserteq(true, device_active(normal));
+	ut_asserteq(false, device_active(dma));
+	ut_asserteq(true, device_active(vital));
+	ut_asserteq(true, device_active(dma_vital));
+
+	/* Remove active devices via selective remove flag */
+	ut_assertok(device_probe(dma));
+	dm_remove_devices_flags(DM_REMOVE_ACTIVE_ALL);
+
+	/* This should have affected both active-dma devices */
+	ut_asserteq(true, device_active(normal));
+	ut_asserteq(false, device_active(dma));
+	ut_asserteq(true, device_active(vital));
+	ut_asserteq(false, device_active(dma_vital));
+
+	/* Remove non-vital devices */
+	ut_assertok(device_probe(dma));
+	ut_assertok(device_probe(dma_vital));
+	dm_remove_devices_flags(DM_REMOVE_NON_VITAL);
+
+	/* This should have affected only non-vital devices */
+	ut_asserteq(false, device_active(normal));
+	ut_asserteq(false, device_active(dma));
+	ut_asserteq(true, device_active(vital));
+	ut_asserteq(true, device_active(dma_vital));
+
+	/* Remove vital devices via normal remove flag */
+	ut_assertok(device_probe(normal));
+	ut_assertok(device_probe(dma));
+	dm_remove_devices_flags(DM_REMOVE_NORMAL);
+
+	/* Check that all devices are inactive right now */
+	ut_asserteq(false, device_active(normal));
+	ut_asserteq(false, device_active(dma));
+	ut_asserteq(false, device_active(vital));
+	ut_asserteq(false, device_active(dma_vital));
+
+	return 0;
+}
+DM_TEST(dm_test_remove_vital, 0);
+
 static int dm_test_uclass_before_ready(struct unit_test_state *uts)
 {
 	struct uclass *uc;
@@ -1085,3 +1180,33 @@ static int dm_test_all_have_seq(struct unit_test_state *uts)
 	return 0;
 }
 DM_TEST(dm_test_all_have_seq, UT_TESTF_SCAN_PDATA);
+
+static int dm_test_dma_offset(struct unit_test_state *uts)
+{
+       struct udevice *dev;
+       ofnode node;
+
+       /* Make sure the bus's dma-ranges aren't taken into account here */
+       node = ofnode_path("/mmio-bus@0");
+       ut_assert(ofnode_valid(node));
+       ut_assertok(uclass_get_device_by_ofnode(UCLASS_TEST_BUS, node, &dev));
+       ut_asserteq_64(0, dev->dma_offset);
+
+       /* Device behind a bus with dma-ranges */
+       node = ofnode_path("/mmio-bus@0/subnode@0");
+       ut_assert(ofnode_valid(node));
+       ut_assertok(uclass_get_device_by_ofnode(UCLASS_TEST_FDT, node, &dev));
+       ut_asserteq_64(-0x10000000ULL, dev->dma_offset);
+
+       /* This one has no dma-ranges */
+       node = ofnode_path("/mmio-bus@1");
+       ut_assert(ofnode_valid(node));
+       ut_assertok(uclass_get_device_by_ofnode(UCLASS_TEST_BUS, node, &dev));
+       node = ofnode_path("/mmio-bus@1/subnode@0");
+       ut_assert(ofnode_valid(node));
+       ut_assertok(uclass_get_device_by_ofnode(UCLASS_TEST_FDT, node, &dev));
+       ut_asserteq_64(0, dev->dma_offset);
+
+       return 0;
+}
+DM_TEST(dm_test_dma_offset, UT_TESTF_SCAN_PDATA | UT_TESTF_SCAN_FDT);

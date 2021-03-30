@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <fsl_ddr.h>
 #include <fdt_support.h>
+#include <asm/global_data.h>
 #include <linux/libfdt.h>
 #include <env_internal.h>
 #include <asm/arch-fsl-layerscape/soc.h>
@@ -18,6 +19,12 @@
 #include <miiphy.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+int board_early_init_f(void)
+{
+	fsl_lsch3_early_init_f();
+	return 0;
+}
 
 int board_init(void)
 {

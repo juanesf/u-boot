@@ -129,6 +129,16 @@ config TPL_DM_INLINE_OFNODE
 	  This applies to several ofnode functions (see ofnode.h) which are
 	  seldom used. Inlining them can help reduce code size.
 
+config DM_DMA
+	bool "Support per-device DMA constraints"
+	depends on DM
+	default n
+	help
+	  Enable this to extract per-device DMA constraints, only supported on
+	  device-tree systems for now. This is needed in order translate
+	  addresses on systems where different buses have different views of
+	  the physical address space.
+
 config REGMAP
 	bool "Support register maps"
 	depends on DM
@@ -318,15 +328,6 @@ config ACPIGEN
 	  devices. It adds a new operation struct to each driver, to support
 	  things like generating device-specific tables and returning the ACPI
 	  name of a device.
-
-config INTEL_ACPIGEN
-	bool "Support ACPI table generation for Intel SoCs"
-	depends on ACPIGEN
-	help
-	  This option adds some functions used for programatic generation of
-	  ACPI tables on Intel SoCs. This provides features for writing CPU
-	  information such as P states and T stages. Also included is a way
-	  to create a GNVS table and set it up.
 
 config BOUNCE_BUFFER
 	bool "Include bounce buffer API"
