@@ -10,16 +10,16 @@
 #ifndef __INIT_H_
 #define __INIT_H_	1
 
-#include <linux/types.h>
-
-struct global_data;
-
 #ifndef __ASSEMBLY__		/* put C only stuff in this section */
+
+#include <linux/types.h>
 
 /* Avoid using CONFIG_EFI_STUB directly as we may boot from other loaders */
 #ifdef CONFIG_EFI_STUB
 #define ll_boot_init()	false
 #else
+#include <asm/global_data.h>
+
 #define ll_boot_init()	(!(gd->flags & GD_FLG_SKIP_LL_INIT))
 #endif
 
@@ -326,7 +326,8 @@ void relocate_code(ulong start_addr_sp, struct global_data *new_gd,
 #endif
 
 /* Print a numeric value (for use in arch_print_bdinfo()) */
-void bdinfo_print_num(const char *name, ulong value);
+void bdinfo_print_num_l(const char *name, ulong value);
+void bdinfo_print_num_ll(const char *name, unsigned long long value);
 
 /* Print a clock speed in MHz */
 void bdinfo_print_mhz(const char *name, unsigned long hz);

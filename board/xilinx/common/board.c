@@ -7,6 +7,7 @@
 #include <common.h>
 #include <env.h>
 #include <log.h>
+#include <asm/global_data.h>
 #include <asm/sections.h>
 #include <dm/uclass.h>
 #include <i2c.h>
@@ -326,7 +327,7 @@ void *board_fdt_blob_setup(void)
 
 	if (!IS_ENABLED(CONFIG_SPL_BUILD) &&
 	    !IS_ENABLED(CONFIG_VERSAL_NO_DDR) &&
-	    !IS_ENABLED(CONFIG_VERSAL_NO_DDR)) {
+	    !IS_ENABLED(CONFIG_ZYNQMP_NO_DDR)) {
 		fdt_blob = (void *)CONFIG_XILINX_OF_BOARD_DTB_ADDR;
 
 		if (fdt_magic(fdt_blob) == FDT_MAGIC)

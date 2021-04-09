@@ -7,6 +7,7 @@
 #include <dm.h>
 #include <malloc.h>
 #include <sdhci.h>
+#include <asm/global_data.h>
 #include <linux/mbus.h>
 
 #define MVSDH_NAME "mv_sdh"
@@ -117,6 +118,10 @@ static int mv_sdhci_probe(struct udevice *dev)
 	host->mmc = &plat->mmc;
 	host->mmc->dev = dev;
 	host->mmc->priv = host;
+
+	ret = mmc_of_parse(dev, &plat->cfg);
+	if (ret)
+		return ret;
 
 	ret = sdhci_setup_cfg(&plat->cfg, host, 0, 0);
 	if (ret)

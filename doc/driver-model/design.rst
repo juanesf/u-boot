@@ -725,7 +725,7 @@ The steps are:
 
    2. If plat_auto is non-zero, then the platform data space
    is allocated. This is only useful for device tree operation, since
-   otherwise you would have to specific the platform data in the
+   otherwise you would have to specify the platform data in the
    U_BOOT_DRVINFO() declaration. The space is allocated for the device and
    zeroed. It will be accessible as dev->plat.
 
@@ -861,8 +861,8 @@ remove it. This performs the probe steps in reverse:
    be dynamically allocated, and thus needs to be deallocated during the
    remove() method, either:
 
-      - if the plat_auto is non-zero, the deallocation
-        happens automatically within the driver model core; or
+      - if the plat_auto is non-zero, the deallocation happens automatically
+        within the driver model core in the unbind stage; or
 
       - when plat_auto is 0, both the allocation (in probe()
         or preferably of_to_plat()) and the deallocation in remove()
@@ -879,6 +879,26 @@ The device is unbound. This is the step that actually destroys the device.
 If a parent has children these will be destroyed first. After this point
 the device does not exist and its memory has be deallocated.
 
+
+Special cases for removal
+-------------------------
+
+Some devices need to do clean-up before the OS is called. For example, a USB
+driver may want to stop the bus. This can be done in the remove() method.
+Some special flags are used to determine whether to remove the device:
+
+   DM_FLAG_OS_PREPARE - indicates that the device needs to get ready for OS
+          boot. The device will be removed just before the OS is booted
+   DM_REMOVE_ACTIVE_DMA - indicates that the device uses DMA. This is
+          effectively the same as DM_FLAG_OS_PREPARE, so the device is removed
+          before the OS is booted
+   DM_FLAG_VITAL - indicates that the device is 'vital' to the operation of
+          other devices. It is possible to remove this device after all regular
+          devices are removed. This is useful e.g. for a clock, which need to
+          be active during the device-removal phase.
+
+The dm_remove_devices_flags() function can be used to remove devices based on
+their driver flags.
 
 Data Structures
 ---------------

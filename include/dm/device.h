@@ -71,12 +71,22 @@ struct driver_info;
  * Device is removed without switching off its power domain. This might
  * be required, i. e. for serial console (debug) output when booting OS.
  */
-#define DM_FLAG_REMOVE_WITH_PD_ON	(1 << 13)
+#define DM_FLAG_LEAVE_PD_ON		(1 << 13)
+
+/*
+ * Device is vital to the operation of other devices. It is possible to remove
+ * removed this device after all regular devices are removed. This is useful
+ * e.g. for clock, which need to be active during the device-removal phase.
+ */
+#define DM_FLAG_VITAL			(1 << 14)
 
 /*
  * One or multiple of these flags are passed to device_remove() so that
  * a selective device removal as specified by the remove-stage and the
  * driver flags can be done.
+ *
+ * DO NOT use these flags in your driver's @flags value...
+ *	use the above DM_FLAG_... values instead
  */
 enum {
 	/* Normal remove, remove all devices */
@@ -88,7 +98,8 @@ enum {
 	/* Remove devices which need some final OS preparation steps */
 	DM_REMOVE_OS_PREPARE	= DM_FLAG_OS_PREPARE,
 
-	/* Add more use cases here */
+	/* Remove only devices that are not marked vital */
+	DM_REMOVE_NON_VITAL	= DM_FLAG_VITAL,
 
 	/* Remove devices with any active flag */
 	DM_REMOVE_ACTIVE_ALL	= DM_REMOVE_ACTIVE_DMA | DM_REMOVE_OS_PREPARE,
@@ -148,6 +159,8 @@ enum {
  *		When CONFIG_DEVRES is enabled, devm_kmalloc() and friends will
  *		add to this list. Memory so-allocated will be freed
  *		automatically when the device is removed / unbound
+ * @dma_offset: Offset between the physical address space (CPU's) and the
+ *		device's bus address space
  */
 struct udevice {
 	const struct driver *driver;
@@ -171,6 +184,9 @@ struct udevice {
 #endif
 #ifdef CONFIG_DEVRES
 	struct list_head devres_head;
+#endif
+#if CONFIG_IS_ENABLED(DM_DMA)
+	ulong dma_offset;
 #endif
 };
 
@@ -212,6 +228,14 @@ static inline ofnode dev_ofnode(const struct udevice *dev)
 
 /* Returns non-zero if the device is active (probed and not removed) */
 #define device_active(dev)	(dev_get_flags(dev) & DM_FLAG_ACTIVATED)
+
+#if CONFIG_IS_ENABLED(DM_DMA)
+#define dev_set_dma_offset(_dev, _offset)	_dev->dma_offset = _offset
+#define dev_get_dma_offset(_dev)		_dev->dma_offset
+#else
+#define dev_set_dma_offset(_dev, _offset)
+#define dev_get_dma_offset(_dev)		0
+#endif
 
 static inline int dev_of_offset(const struct udevice *dev)
 {

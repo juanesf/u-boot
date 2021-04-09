@@ -58,8 +58,8 @@ Where to get source code:
 =========================
 
 The U-Boot source code is maintained in the Git repository at
-https://gitlab.denx.de/u-boot/u-boot.git ; you can browse it online at
-https://gitlab.denx.de/u-boot/u-boot
+https://source.denx.de/u-boot/u-boot.git ; you can browse it online at
+https://source.denx.de/u-boot/u-boot
 
 The "Tags" links on this page allow you to download tarballs of
 any version you might be interested in. Official releases are also
@@ -575,7 +575,6 @@ The following options need to be configured:
 		 * The bootm command automatically updates the fdt
 
 		OF_TBCLK - The timebase frequency.
-		OF_STDOUT_PATH - The path to the console device
 
 		boards with QUICC Engines require OF_QE to set UCC MAC
 		addresses

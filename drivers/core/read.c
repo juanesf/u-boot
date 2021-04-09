@@ -8,6 +8,7 @@
 #include <dm.h>
 #include <dm/of_access.h>
 #include <mapmem.h>
+#include <asm/global_data.h>
 #include <asm/types.h>
 #include <asm/io.h>
 #include <linux/ioport.h>
@@ -338,6 +339,12 @@ u64 dev_translate_address(const struct udevice *dev, const fdt32_t *in_addr)
 u64 dev_translate_dma_address(const struct udevice *dev, const fdt32_t *in_addr)
 {
 	return ofnode_translate_dma_address(dev_ofnode(dev), in_addr);
+}
+
+int dev_get_dma_range(const struct udevice *dev, phys_addr_t *cpu,
+		      dma_addr_t *bus, u64 *size)
+{
+	return ofnode_get_dma_range(dev_ofnode(dev), cpu, bus, size);
 }
 
 int dev_read_alias_highest_id(const char *stem)
