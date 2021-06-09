@@ -95,7 +95,7 @@
 		regulator-name = "vcc5v0";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpios = <&pio 7 23 GPIO_ACTIVE_HIGH>; /* PH23 */
+		gpio = <&pio 7 23 GPIO_ACTIVE_HIGH>; /* PH23 */
 		enable-active-high;
 	};
 
@@ -118,8 +118,7 @@
 		"Headphone", "HP",
 		"Headphone", "HPCOM",
 		"MIC1", "Mic",
-		"Mic", "MBIAS";
-	allwinner,codec-analog-controls = <&codec_analog>;
+		"Mic",  "MBIAS";
 	status = "okay";
 };
 
@@ -170,20 +169,6 @@
 		interrupt-parent = <&nmi_intc>;
 		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
 	};
-};
-
-&i2c2 {
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * I2C2-SDA pin_03
-	 * I2C2-SCK pin_05
-	 */
-};
-
-&i2s2 {
-	allwinner,playback-channels = <8>;
-	status = "okay";
 };
 
 #include "axp22x.dtsi"
@@ -323,21 +308,6 @@
 	regulator-name = "vdd1v2-sata";
 };
 
-&spi0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&spi0_pc_pins>,
-		<&spi0_cs0_pc_pin>, <&spi0_cs1_ph_pin>;
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * SPI0-MOSI pin_19
-	 * SPI0-MISO pin_21
-	 * SPI0-CLK  pin_23
-	 * SPI0-CS0  pin_24
-	 * SPI0-CS1  pin_26
-	 */
-};
-
 &tcon_tv0 {
 	status = "okay";
 };
@@ -346,17 +316,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_pb_pins>;
 	status = "okay";
-};
-
-&uart2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart2_pi_pins>;
-	status = "okay";
-	/*
-	 * On board 40-pin GPIO header
-	 * UART4-TX pin_18
-	 * UART4-RX pin_19
-	 */
 };
 
 &uart3 {

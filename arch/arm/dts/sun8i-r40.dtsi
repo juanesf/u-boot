@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2017 Chen-Yu Tsai <wens@csie.org>
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
+ * Copyright 2017 Chen-Yu Tsai <wens@csie.org>
+ * Copyright 2017 Icenowy Zheng <icenowy@aosc.io>
  *
  * This file is dual-licensed: you can use it either under the terms
  * of the GPL or the X11 license, at your option. Note that this dual
@@ -111,6 +111,24 @@
 		status = "disabled";
 	};
 
+	sound_hdmi: sound {
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,name = "allwinner-hdmi";
+		simple-audio-card,mclk-fs = <128>;
+		simple-audio-card,frame-inversion;
+
+		simple-audio-card,codec {
+			sound-dai = <&hdmi>;
+		};
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s2>;
+			dai-tdm-slot-num = <2>;
+			dai-tdm-slot-width = <32>;
+		};
+	};
+
 	thermal-zones {
 		cpu_thermal: cpu0-thermal {
 			/* milliseconds */
@@ -192,11 +210,17 @@
 		};
 
 		deinterlace: deinterlace@1400000 {
-			compatible = "allwinner,sun8i-r40-deinterlace";
+			compatible = "allwinner,sun8i-r40-deinterlace",
+				     "allwinner,sun8i-h3-deinterlace";
 			reg = <0x01400000 0x20000>;
 			clocks = <&ccu CLK_BUS_DEINTERLACE>,
 				 <&ccu CLK_DEINTERLACE>,
-				 <&ccu CLK_DRAM_DEINTERLACE>;
+				 /*
+				  * NOTE: Contrary to what datasheet claims,
+				  * DRAM deinterlace gate doesn't exist and
+				  * it's shared with CSI1.
+				  */
+				 <&ccu CLK_DRAM_CSI1>;
 			clock-names = "bus", "mod", "ram";
 			resets = <&ccu RST_BUS_DEINTERLACE>;
 			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
@@ -286,10 +310,9 @@
 			interconnect-names = "dma-mem";
 			status = "disabled";
 		};
-		
+
 		video-codec@1c0e000 {
-			compatible = "allwinner,sun8i-a33-video-engine",
-					"allwinner,sun8i-r40-video-engine";
+			compatible = "allwinner,sun8i-r40-video-engine";
 			reg = <0x01c0e000 0x1000>;
 			clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>,
 			<&ccu CLK_DRAM_VE>;
@@ -353,6 +376,8 @@
 			clock-names = "ahb", "mmc";
 			resets = <&ccu RST_BUS_MMC3>;
 			reset-names = "ahb";
+			pinctrl-0 = <&mmc3_pins>;
+			pinctrl-names = "default";
 			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 			#address-cells = <1>;
@@ -598,6 +623,15 @@
 			};
 
 			/omit-if-no-ref/
+			mmc3_pins: mmc3-pins {
+				pins = "PI4", "PI5", "PI6",
+				       "PI7", "PI8", "PI9";
+				function = "mmc3";
+				drive-strength = <30>;
+				bias-pull-up;
+			};
+
+			/omit-if-no-ref/
 			spi0_pc_pins: spi0-pc-pins {
 				pins = "PC0", "PC1", "PC2";
 				function = "spi0";
@@ -606,12 +640,6 @@
 			/omit-if-no-ref/
 			spi0_cs0_pc_pin: spi0-cs0-pc-pin {
 				pins = "PC23";
-				function = "spi0";
-			};
-			
-			/omit-if-no-ref/
-			spi0_cs1_ph_pin: spi0-cs1-ph-pin {
-				pins = "PH24";
 				function = "spi0";
 			};
 
@@ -633,39 +661,52 @@
 				function = "spi1";
 			};
 
+			/omit-if-no-ref/
 			uart0_pb_pins: uart0-pb-pins {
 				pins = "PB22", "PB23";
 				function = "uart0";
 			};
-			
+
+			/omit-if-no-ref/
 			uart2_pi_pins: uart2-pi-pins {
 				pins = "PI18", "PI19";
 				function = "uart2";
 			};
 
-			uart2_rts_cts_pi_pins: uart2-rts-cts-pi-pins {
+			/omit-if-no-ref/
+			uart2_rts_cts_pi_pins: uart2-rts-cts-pi-pins{
 				pins = "PI16", "PI17";
 				function = "uart2";
 			};
 
+			/omit-if-no-ref/
 			uart3_pg_pins: uart3-pg-pins {
 				pins = "PG6", "PG7";
 				function = "uart3";
 			};
 
+			/omit-if-no-ref/
 			uart3_rts_cts_pg_pins: uart3-rts-cts-pg-pins {
 				pins = "PG8", "PG9";
 				function = "uart3";
 			};
 
-			uart4_ph_pins: uart4-ph-pins {
-				pins = "PH4", "PH5";
+			/omit-if-no-ref/
+			uart4_pg_pins: uart4-pg-pins {
+				pins = "PG10", "PG11";
 				function = "uart4";
 			};
 
+			/omit-if-no-ref/
 			uart5_ph_pins: uart5-ph-pins {
 				pins = "PH6", "PH7";
 				function = "uart5";
+			};
+
+			/omit-if-no-ref/
+			uart7_pi_pins: uart7-pi-pins {
+				pins = "PI20", "PI21";
+				function = "uart7";
 			};
 		};
 
@@ -688,9 +729,22 @@
 			clocks = <&osc24M>;
 		};
 
+		i2s2: i2s@1c22800 {
+			#sound-dai-cells = <0>;
+			compatible = "allwinner,sun8i-r40-i2s",
+				     "allwinner,sun8i-h3-i2s";
+			reg = <0x01c22800 0x400>;
+			interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_I2S2>, <&ccu CLK_I2S2>;
+			clock-names = "apb", "mod";
+			resets = <&ccu RST_BUS_I2S2>;
+			dmas = <&dma 6>, <&dma 6>;
+			dma-names = "rx", "tx";
+		};
+
 		ir0: ir@1c21800 {
 			compatible = "allwinner,sun8i-r40-ir",
-					"allwinner,sun6i-a31-ir";
+				     "allwinner,sun6i-a31-ir";
 			reg = <0x01c21800 0x400>;
 			pinctrl-0 = <&ir0_pins>;
 			pinctrl-names = "default";
@@ -714,47 +768,6 @@
 			status = "disabled";
 		};
 
-		i2s0: i2s@1c22000 {
-			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-r40-i2s",
-				     "allwinner,sun8i-h3-i2s";
-			reg = <0x01c22000 0x400>;
-			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_I2S0>, <&ccu CLK_I2S0>;
-			clock-names = "apb", "mod";
-			resets = <&ccu RST_BUS_I2S0>;
-			dma-names = "rx", "tx";
-			dmas = <&dma 3>, <&dma 3>;
-			status = "disabled";
-		};
-
-		i2s1: i2s@1c22400 {
-			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-r40-i2s",
-				     "allwinner,sun8i-h3-i2s";
-			reg = <0x01c22400 0x400>;
-			interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_I2S1>, <&ccu CLK_I2S1>;
-			clock-names = "apb", "mod";
-			resets = <&ccu RST_BUS_I2S1>;
-			dma-names = "rx", "tx";
-			dmas = <&dma 4>, <&dma 4>;
-			status = "disabled";
-		};
-
-		i2s2: i2s2@1c22800 {
-			#sound-dai-cells = <0>;
-			compatible = "allwinner,sun8i-r40-i2s",
-				     "allwinner,sun8i-h3-i2s";
-			reg = <0x01c22800 0x400>;
-			interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_I2S2>, <&ccu CLK_I2S2>;
-			clock-names = "apb", "mod";
-			resets = <&ccu RST_BUS_I2S2>;
-			dmas = <&dma 6>, <&dma 6>;
-			dma-names = "rx", "tx";
-		};
-
 		codec: codec@1c22c00 {
 			#sound-dai-cells = <0>;
 			compatible = "allwinner,sun8i-h3-codec";
@@ -765,6 +778,7 @@
 			resets = <&ccu RST_BUS_CODEC>;
 			dmas = <&dma 19>, <&dma 19>;
 			dma-names = "rx", "tx";
+			allwinner,codec-analog-controls = <&codec_analog>;
 			status = "disabled";
 		};
 
